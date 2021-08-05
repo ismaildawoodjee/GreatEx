@@ -48,7 +48,7 @@ x-airflow-common:
   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
   image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:latest-python3.9}
-  # build: .
+#   build: .
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -59,11 +59,12 @@ x-airflow-common:
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKEND: 'airflow.api.auth.backend.basic_auth'
-    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-'great_expectations'}
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
+    - ./great_expectations:/opt/airflow/great_expectations
   user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-0}"
   depends_on:
     &airflow-common-depends-on
@@ -73,12 +74,14 @@ x-airflow-common:
       condition: service_healthy
 
 services:
-  postgres_airflow:
+  postgres-airflow:
     image: postgres:13
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
+    ports:
+      - '5432:5432'
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
@@ -196,7 +199,28 @@ services:
     ports:
       - '5433:5432'
     volumes:
-      - ./source-db:/var/lib/postgresql/data
+      - ./source-data:/source-data
+      - ./database-setup/retail.sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
+    restart: always
+
+  postgres-dest:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: destdb1
+      POSTGRES_PASSWORD: destdb1
+      POSTGRES_DB: destdb
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - '5434:5432'
+    volumes:
+      - ./dest-data:/dest-data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 5s
