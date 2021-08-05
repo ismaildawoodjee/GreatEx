@@ -1,0 +1,2 @@
+This is where transformed data from the `raw` folder is loaded.
+Files here are also ignored by .gitignore.

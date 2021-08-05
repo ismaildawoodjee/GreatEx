@@ -1,0 +1,37 @@
+{
+  "data_asset_type": null,
+  "expectation_suite_name": "retail_source_suite",
+  "expectations": [
+    {
+      "expectation_type": "expect_table_columns_to_match_ordered_list",
+      "kwargs": {
+        "column_list": [
+          "invoice_number",
+          "stock_code",
+          "detail",
+          "quantity",
+          "invoice_date",
+          "unit_price",
+          "customer_id",
+          "country"
+        ]
+      },
+      "meta": {}
+    }
+  ],
+  "meta": {
+    "citations": [
+      {
+        "batch_request": {
+          "data_asset_name": "ecommerce.retail_profiling",
+          "data_connector_name": "default_inferred_data_connector_name",
+          "datasource_name": "retail_source",
+          "limit": 1000
+        },
+        "citation_date": "2021-08-05T09:04:09.977911Z",
+        "comment": "Created suite added via CLI"
+      }
+    ],
+    "great_expectations_version": "0.13.25"
+  }
+}

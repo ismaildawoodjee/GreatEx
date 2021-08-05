@@ -1,3 +1,5 @@
+# Run this script after initializing Airflow containers
+
 $PROJECT_NAME = 'greatex'
 
 docker exec -d $PROJECT_NAME'_airflow-webserver_1' `
