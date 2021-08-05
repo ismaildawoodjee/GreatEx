@@ -1,2 +1,2 @@
-This is where raw data extracted from the source PostgresDB lands.
+This is where raw data extracted from the source PostgresDB lands, in the form of CSV files.
 The files are untracked by .gitignore because they are too large.

@@ -1,2 +1,2 @@
-This is where transformed data from the `raw` folder is loaded.
+This is where transformed data from the `raw` folder is loaded, in the form of parquet files.
 Files here are also ignored by .gitignore.
