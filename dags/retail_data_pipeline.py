@@ -7,7 +7,7 @@ from airflow.operators.python_operator import PythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.bash_operator import BashOperator
 
-# for some reason, Airflow's macro used like this _{{ ds }}.csv doesn't working
+# for some reason, Airflow's macro used like this _{{ ds }}.csv doesn't work
 date = datetime.today().strftime("%Y-%m-%d")
 default_args = {
     "owner": "airflow",
@@ -44,7 +44,7 @@ extract_retail_data = PostgresOperator(
     task_id="extract_retail_data",
     sql="./scripts/sql/extract_retail_data.sql",
     postgres_conn_id="postgres_source",
-    params={"to_raw": f"/filesystem/raw/retail_profiling_{date}.csv"},
+    params={"to_raw": f"/filesystem/raw/retail_profiling-{date}.csv"},
 )
 
 # load_retail_data = PythonOperator(

@@ -23,8 +23,8 @@ datasource_config = {
             "class_name": "InferredAssetFilesystemDataConnector",
             "base_directory": "../filesystem/raw",
             "default_regex": {
-                "group_names": ["data_asset_name"],
-                "pattern": "(.*)\.csv",
+                "group_names": ["data_asset_name", "year", "month", "day"],
+                "pattern": "(.*)(-\d{4})-(\d{2})-(\d{2})\.csv",
             },
         },
     },
