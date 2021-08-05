@@ -1,4 +1,3 @@
-
 # Welcome to Great Expectations! Always know what to expect from your data.
 #
 # Here you can define datasources, batch kwargs generators, integrations and
@@ -9,31 +8,49 @@
 
 # config_version refers to the syntactic version of this config file, and is used in maintaining backwards compatibility
 # It is auto-generated and usually does not need to be changed.
-config_version: 3
+config_version: 3.0
 
 # Datasources tell Great Expectations where your data lives and how to get it.
 # You can use the CLI command `great_expectations datasource new` to help you
 # add a new datasource. Read more at https://docs.greatexpectations.io/en/latest/reference/core_concepts/datasource.html
-datasources: {}
-
-# This config file supports variable substitution which enables: 1) keeping
-# secrets out of source control & 2) environment-based configuration changes
-# such as staging vs prod.
-#
-# When GE encounters substitution syntax (like `my_key: ${my_value}` or
-# `my_key: $my_value`) in the great_expectations.yml file, it will attempt
-# to replace the value of `my_key` with the value from an environment
-# variable `my_value` or a corresponding key read from this config file,
-# which is defined through the `config_variables_file_path`.
-# Environment variables take precedence over variables defined here.
-#
-# Substitution values defined here can be a simple (non-nested) value,
-# nested value such as a dictionary, or an environment variable (i.e. ${ENV_VAR})
-#
-#
-# https://docs.greatexpectations.io/en/latest/guides/how_to_guides/configuring_data_contexts/how_to_use_a_yaml_file_or_environment_variables_to_populate_credentials.html
-
-
+datasources:
+  retail_source:
+    execution_engine:
+      class_name: SqlAlchemyExecutionEngine
+      module_name: great_expectations.execution_engine
+      connection_string: postgresql+psycopg2://sourcedb1:sourcedb1@localhost:5433/sourcedb
+    class_name: Datasource
+    module_name: great_expectations.datasource
+    data_connectors:
+      default_runtime_data_connector_name:
+        module_name: great_expectations.datasource.data_connector
+        class_name: RuntimeDataConnector
+        batch_identifiers:
+          - default_identifier_name
+      default_inferred_data_connector_name:
+        module_name: great_expectations.datasource.data_connector
+        include_schema_name: true
+        class_name: InferredAssetSqlDataConnector
+  retail_load:
+    execution_engine:
+      class_name: PandasExecutionEngine
+      module_name: great_expectations.execution_engine
+    class_name: Datasource
+    module_name: great_expectations.datasource
+    data_connectors:
+      default_runtime_data_connector_name:
+        module_name: great_expectations.datasource.data_connector
+        class_name: RuntimeDataConnector
+        batch_identifiers:
+          - default_identifier_name
+      default_inferred_data_connector_name:
+        base_directory: ../filesystem/raw
+        module_name: great_expectations.datasource.data_connector
+        default_regex:
+          group_names:
+            - data_asset_name
+          pattern: (.*)\.csv
+        class_name: InferredAssetFilesystemDataConnector
 config_variables_file_path: uncommitted/config_variables.yml
 
 # The plugins_directory will be added to your python path for custom modules
@@ -87,10 +104,12 @@ data_docs_sites:
     # set to false to hide how-to buttons in Data Docs
     show_how_to_buttons: true
     store_backend:
-        class_name: TupleFilesystemStoreBackend
-        base_directory: uncommitted/data_docs/local_site/
+      class_name: TupleFilesystemStoreBackend
+      base_directory: uncommitted/data_docs/local_site/
     site_index_builder:
-        class_name: DefaultSiteIndexBuilder
+      class_name: DefaultSiteIndexBuilder
 
 anonymous_usage_statistics:
-  enabled: True
+  enabled: true
+  data_context_id: f3396c04-b4c3-467b-995f-87eb29f08ab6
+notebooks:

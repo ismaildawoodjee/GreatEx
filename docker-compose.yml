@@ -80,7 +80,7 @@ x-airflow-common:
       condition: service_healthy
 
 services:
-  postgres-airflow:
+  postgres-airflow:  # since the defaults are specified, can just connect with `psql -U airflow`
     image: postgres:13
     environment:
       POSTGRES_USER: airflow
@@ -191,8 +191,9 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-    
-  postgres-source:  # this is hostname; connect using `psql -h hostname -U username -d database_name`
+  
+  # URI connection is `psql postgres://username:password@hostname:5432/database_name`
+  postgres-source:  # this is hostname; connect using `psql -h hostname -U username -d database_name` (can specify switches in CLI or connect with URI string instead)
     image: postgres:13
     environment:
       POSTGRES_USER: sourcedb1
@@ -206,6 +207,7 @@ services:
       - '5433:5432'
     volumes:
       - ./source-data:/source-data
+      - ./filesystem:/filesystem
       - ./database-setup/retail.sql:/docker-entrypoint-initdb.d/retail.sql
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "sourcedb1"]
@@ -213,7 +215,9 @@ services:
       retries: 5
     restart: always
 
-  postgres-dest:  # connect using `psql -h postgres-dest -U destdb1 -d destdb`
+  # connect using `psql -h postgres-dest -U destdb1 -d destdb`
+  # alternatively `psql postgres://destdb1:destdb1@postgres-dest:5432/destdb`
+  postgres-dest:
     image: postgres:13
     environment:
       POSTGRES_USER: destdb1
