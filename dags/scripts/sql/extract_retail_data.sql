@@ -1,4 +1,4 @@
--- To extract retail data from PostgresDB to /raw folder
+-- To extract retail data from PostgresDB and load it to /raw folder
 COPY (
     SELECT invoice_number
         , stock_code

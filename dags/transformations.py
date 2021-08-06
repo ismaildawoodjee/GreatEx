@@ -16,10 +16,3 @@ def transform_raw_data(output_loc):
 
     # load transformed data to `stage` folder
     df.to_parquet(output_loc)
-
-def transform_stage_data(output_loc):
-    
-    # read in data from `stage` folder
-    df = pd.read_parquet(f"{root_path}/filesystem/stage/retail_profiling-{date}.snappy.parquet")
-    
-    # perform transformations here

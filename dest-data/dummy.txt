@@ -1,0 +1,2 @@
+This is where the final transformed data is loaded into a production-ready data warehouse.
+Here, I used a PostgresDB container to emulate the warehouse, but usually this will be a cloud warehouse.

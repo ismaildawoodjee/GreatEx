@@ -32,40 +32,40 @@ dag = DAG(
     # },
 )
 
-validate_source_retail_data = BashOperator(
+validate_retail_source_data = BashOperator(
     dag=dag,
-    task_id="validate_source_retail_data",
+    task_id="validate_retail_source_data",
     bash_command="cd /opt/airflow/; \
 great_expectations --v3-api checkpoint run retail_source_checkpoint",
 )
 
-extract_load_retail_data = PostgresOperator(
+extract_load_retail_source = PostgresOperator(
     dag=dag,
-    task_id="extract_load_retail_data",
+    task_id="extract_load_retail_source",
     sql="./scripts/sql/extract_retail_data.sql",
     postgres_conn_id="postgres_source",
     params={"to_raw": f"/filesystem/raw/retail_profiling-{date}.csv"},
 )
 
-validate_raw_retail_data = BashOperator(
+validate_retail_raw_data = BashOperator(
     dag=dag,
-    task_id="validate_raw_retail_data",
+    task_id="validate_retail_raw_data",
     bash_command="cd /opt/airflow/; \
 great_expectations --v3-api checkpoint run retail_load_checkpoint",
 )
 
-transform_load_retail_data = PythonOperator(
+transform_load_retail_raw = PythonOperator(
     dag=dag,
-    task_id="transform_load_retail_data",
+    task_id="transform_load_retail_raw",
     python_callable=transform_raw_data,
     op_kwargs={
         "output_loc": f"{root_path}/filesystem/stage/retail_profiling-{date}.snappy.parquet"
     },
 )
 
-validate_stage_retail_data = BashOperator(
+validate_retail_stage_data = BashOperator(
     dag=dag,
-    task_id="validate_stage_retail_data",
+    task_id="validate_retail_stage_data",
     bash_command="cd /opt/airflow/; \
 great_expectations --v3-api checkpoint run retail_transform_checkpoint",
 )
