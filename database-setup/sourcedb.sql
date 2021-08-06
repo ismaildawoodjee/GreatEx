@@ -24,5 +24,5 @@ COPY ecommerce.retail_profiling
     country
 )
 FROM '/source-data/retail_profiling.csv' 
-DELIMITER ','
+WITH DELIMITER ','
 CSV HEADER;

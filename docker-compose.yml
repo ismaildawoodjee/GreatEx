@@ -206,7 +206,7 @@ services:
     volumes:
       - ./source-data:/source-data
       - ./filesystem:/filesystem
-      - ./database-setup/retail.sql:/docker-entrypoint-initdb.d/retail.sql
+      - ./database-setup/sourcedb.sql:/docker-entrypoint-initdb.d/sourcedb.sql
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "sourcedb1"]
       interval: 5s
@@ -230,6 +230,7 @@ services:
     volumes:
       - ./dest-data:/dest-data
       - ./filesystem:/filesystem
+      - ./database-setup/destinationdb.sql:/docker-entrypoint-initdb.d/destinationdb.sql
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "destdb1"]
       interval: 5s
