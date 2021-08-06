@@ -4,5 +4,6 @@
 __pycache__
 logs
 temp
+plugins
 *.csv
 *.parquet

@@ -2,6 +2,52 @@
 
 ## Introduction
 
+**Repo directory structure:**
+
+    .
+    ├── dags
+    │   ├── scripts
+    │   │   ├── python
+    │   │   │   ├── filesystem_raw_conn.py
+    │   │   │   ├── filesystem_stage_conn.py
+    │   │   │   └── postgres_source_conn.py    
+    │   │   └── sql
+    │   │       └── extract_retail_data.sql
+    │   ├── retail_data_pipeline.py
+    │   └── transformations.py
+    ├── database-setup
+    │   └── retail.sql
+    ├── dest-data
+    │   └── dummy.txt
+    ├── filesystem
+    │   ├── raw
+    │   │   └── dummy.txt
+    │   └── stage
+    │       └── dummy.txt
+    ├── great_expectations
+    │   ├── checkpoints
+    │   │   ├── retail_load_checkpoint.yml
+    │   │   ├── retail_source_checkpoint.yml
+    │   │   └── retail_transform_checkpoint.yml
+    │   ├── expectations
+    │   │   ├── .ge_store_backend_id
+    │   │   └── retail_source_suite.json
+    │   ├── uncommitted
+    │   │   └── config_variables.yml
+    │   ├── .gitignore
+    │   └── great_expectations.yml
+    ├── source-data
+    │   ├── retail_profiling.csv
+    │   └── retail_validating.csv
+    ├── .dockerignore
+    ├── .gitattributes
+    ├── .gitignore
+    ├── Dockerfile
+    ├── README.md
+    ├── airflow_conn.ps1
+    ├── docker-compose.yml
+    └── requirements.txt
+
 ## Setup
 
 Clone this repository,  
