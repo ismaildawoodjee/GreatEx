@@ -4,13 +4,15 @@
 
 ## Setup
 
-Clone this repository, prepare a Python virtual environment and initialize the Airflow containers.
+Clone this repository,  
 
-    git clone https://github.com/ismaildawoodjee/GreatEx
+    git clone https://github.com/ismaildawoodjee/GreatEx; cd GreatEx
 
-    cd GreatEx
+Prepare a Python virtual environment,
 
     python -m venv .venv; .venv\Scripts\Activate.ps1
+
+And initialize the Airflow containers.
 
     docker-compose up airflow-init
 
@@ -52,3 +54,33 @@ for running Airflow in Docker. I modified it in several different ways:
 
   This also applies to username, password and database names.
 - The Docker images for Airflow and Postgres can be any supported version, but I specified them to use the `latest` tag, and used Python version 3.8.
+
+## Retail Pipeline DAG
+
+Currently, the Airflow DAG looks like the following:
+
+![Retail pipeline DAG](assets/images/current_dag.png)
+
+- `validate_retail_source_data`: This task uses the BashOperator to run a GreatEx Checkpoint for validating data in the
+  `postgres-source` database. A Checkpoint is a pair between a Datasource and an Expectation Suite, so to create a Checkpoint,
+  both the Datasource and the Expectation Suite must be present (see the section on [Configuring Great Expectations](#configuring-great-expectations)).
+
+- `extract_load_retail_source`: This task extracts data from the `postgres-source` database and loads it into the `raw`
+  directory of the `filesystem`. The `filesystem` could represent a cloud data lake, or an on-premise file storage system.
+  The SQL script that is run in this task can be a customized query to pull any kind of data from the source.
+
+- `validate_retail_raw_data`: This task runs another GreatEx Checkpoint to validate data that has just landed in the `raw` folder.
+  It uses the same Expectation Suite, but uses the data in the `filesystem/raw` directory instead of the `postgres-source` database.
+
+- `transform_load_retail_raw`: After the source data has landed into the `raw` folder, transformations can now take place. Here,
+  I just specified a simple transformation where if a country name is `"Unspecified"`, I change it to `None`. Again, any kind of
+  customized transformation can be specified. It could be a Python script running on local host, a serverless Lambda function, or
+  a Spark cluster. This transformed data is then loaded into the `filesystem/stage` directory in the form of a Parquet file.
+
+- `validate_retail_stage_data`: After the Parquet file has landed into the `stage` folder, another Checkpoint validation takes place.
+  A different Expectation Suite can be created and paired up with the staged Datasource
+  (I used the same Expectation Suite since there weren't any significant transformations).
+
+- `end_of_data_pipeline`: A DummyOperator to mark the end of the DAG.
+
+## Configuring Great Expectations
