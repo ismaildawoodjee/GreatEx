@@ -9,7 +9,7 @@ import great_expectations as ge
 from great_expectations.core.batch import RuntimeBatchRequest
 
 # should be stored as an environment variable
-CONNECTION_STRING = "postgresql+psycopg2://sourcedb1:sourcedb1@localhost:5433/sourcedb"
+CONNECTION_STRING = "postgresql+psycopg2://sourcedb1:sourcedb1@localhost:5432/sourcedb"
 
 context = ge.get_context()
 

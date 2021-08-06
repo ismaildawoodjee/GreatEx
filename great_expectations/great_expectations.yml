@@ -15,32 +15,37 @@ config_version: 3.0
 # add a new datasource. Read more at https://docs.greatexpectations.io/en/latest/reference/core_concepts/datasource.html
 datasources:
   retail_source:
-    class_name: Datasource
+    execution_engine:
+      module_name: great_expectations.execution_engine
+      class_name: SqlAlchemyExecutionEngine
+      connection_string: postgresql+psycopg2://sourcedb1:sourcedb1@postgres-source:5432/sourcedb
     module_name: great_expectations.datasource
     data_connectors:
       default_runtime_data_connector_name:
         module_name: great_expectations.datasource.data_connector
+        class_name: RuntimeDataConnector
         batch_identifiers:
           - default_identifier_name
-        class_name: RuntimeDataConnector
       default_inferred_data_connector_name:
         include_schema_name: true
         module_name: great_expectations.datasource.data_connector
         class_name: InferredAssetSqlDataConnector
-    execution_engine:
-      connection_string: postgresql+psycopg2://sourcedb1:sourcedb1@postgres-source:5432/sourcedb
-      class_name: SqlAlchemyExecutionEngine
-      module_name: great_expectations.execution_engine
-  retail_load:
     class_name: Datasource
+  retail_load:
+    execution_engine:
+      module_name: great_expectations.execution_engine
+      class_name: PandasExecutionEngine
     module_name: great_expectations.datasource
     data_connectors:
       default_runtime_data_connector_name:
         module_name: great_expectations.datasource.data_connector
+        class_name: RuntimeDataConnector
         batch_identifiers:
           - default_identifier_name
-        class_name: RuntimeDataConnector
       default_inferred_data_connector_name:
+        module_name: great_expectations.datasource.data_connector
+        class_name: InferredAssetFilesystemDataConnector
+        base_directory: ../filesystem/raw
         default_regex:
           group_names:
             - data_asset_name
@@ -48,22 +53,22 @@ datasources:
             - month
             - day
           pattern: (.*)(-\d{4})-(\d{2})-(\d{2})\.csv
-        module_name: great_expectations.datasource.data_connector
-        base_directory: ../filesystem/raw
-        class_name: InferredAssetFilesystemDataConnector
-    execution_engine:
-      class_name: PandasExecutionEngine
-      module_name: great_expectations.execution_engine
-  retail_transform:
     class_name: Datasource
+  retail_transform:
+    execution_engine:
+      module_name: great_expectations.execution_engine
+      class_name: PandasExecutionEngine
     module_name: great_expectations.datasource
     data_connectors:
       default_runtime_data_connector_name:
         module_name: great_expectations.datasource.data_connector
+        class_name: RuntimeDataConnector
         batch_identifiers:
           - default_identifier_name
-        class_name: RuntimeDataConnector
       default_inferred_data_connector_name:
+        module_name: great_expectations.datasource.data_connector
+        class_name: InferredAssetFilesystemDataConnector
+        base_directory: ../filesystem/stage
         default_regex:
           group_names:
             - data_asset_name
@@ -72,29 +77,41 @@ datasources:
             - day
             - parquet_compression
           pattern: (.*)(-\d{4})-(\d{2})-(\d{2})\.(.*)\.parquet
-        module_name: great_expectations.datasource.data_connector
-        base_directory: ../filesystem/stage
-        class_name: InferredAssetFilesystemDataConnector
-    execution_engine:
-      class_name: PandasExecutionEngine
-      module_name: great_expectations.execution_engine
-  retail_warehouse:
     class_name: Datasource
+  retail_warehouse:
+    execution_engine:
+      module_name: great_expectations.execution_engine
+      class_name: SqlAlchemyExecutionEngine
+      connection_string: postgresql+psycopg2://destdb1:destdb1@postgres-dest:5432/destdb
     module_name: great_expectations.datasource
     data_connectors:
       default_runtime_data_connector_name:
         module_name: great_expectations.datasource.data_connector
+        class_name: RuntimeDataConnector
         batch_identifiers:
           - default_identifier_name
-        class_name: RuntimeDataConnector
       default_inferred_data_connector_name:
         include_schema_name: true
         module_name: great_expectations.datasource.data_connector
         class_name: InferredAssetSqlDataConnector
+    class_name: Datasource
+  retail_dest:
     execution_engine:
-      connection_string: postgresql+psycopg2://destdb1:destdb1@localhost:5432/destdb
-      class_name: SqlAlchemyExecutionEngine
       module_name: great_expectations.execution_engine
+      class_name: SqlAlchemyExecutionEngine
+      connection_string: postgresql+psycopg2://destdb1:destdb1@postgres-dest:5432/destdb
+    module_name: great_expectations.datasource
+    data_connectors:
+      default_runtime_data_connector_name:
+        module_name: great_expectations.datasource.data_connector
+        class_name: RuntimeDataConnector
+        batch_identifiers:
+          - default_identifier_name
+      default_inferred_data_connector_name:
+        include_schema_name: true
+        module_name: great_expectations.datasource.data_connector
+        class_name: InferredAssetSqlDataConnector
+    class_name: Datasource
 config_variables_file_path: uncommitted/config_variables.yml
 
 # The plugins_directory will be added to your python path for custom modules
@@ -154,6 +171,6 @@ data_docs_sites:
       class_name: DefaultSiteIndexBuilder
 
 anonymous_usage_statistics:
-  data_context_id: f3396c04-b4c3-467b-995f-87eb29f08ab6
   enabled: true
+  data_context_id: f3396c04-b4c3-467b-995f-87eb29f08ab6
 notebooks:

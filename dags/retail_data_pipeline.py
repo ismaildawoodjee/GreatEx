@@ -32,6 +32,9 @@ dag = DAG(
     # },
 )
 
+# Generate Python checkpoint script and run it to validate, 
+# if fails it generates link to Data Docs (send link and custom error message to Airflow logs)
+# GUI or web app to make it easy for users to configure GE datasources, expectations, checkpoints, etc.
 validate_retail_source_data = BashOperator(
     dag=dag,
     task_id="validate_retail_source_data",
@@ -102,6 +105,13 @@ transform_load_retail_warehouse = PostgresOperator(
     # params={"to_raw": f"/filesystem/raw/retail_profiling-{date}.csv"},
 )
 
+validate_retail_dest_data = BashOperator(
+    dag=dag,
+    task_id="validate_retail_dest_data",
+    bash_command="cd /opt/airflow/; \
+great_expectations --v3-api checkpoint run retail_dest_checkpoint",
+)
+
 end_of_data_pipeline = DummyOperator(dag=dag, task_id="end_of_data_pipeline")
 
 (
@@ -114,6 +124,6 @@ end_of_data_pipeline = DummyOperator(dag=dag, task_id="end_of_data_pipeline")
     >> load_retail_stage
     >> validate_retail_warehouse_data
     >> transform_load_retail_warehouse
-    # >> validate_retail_dest_data
+    >> validate_retail_dest_data
     >> end_of_data_pipeline
 )
