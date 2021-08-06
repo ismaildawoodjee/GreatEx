@@ -2,7 +2,9 @@
 
 ## Introduction
 
-This 
+This project looks at how Great Expectations can be used to ensure data quality within an Airflow
+pipeline. All the databases and Airflow components are designed to run within Docker containers, so that
+it's easy to set it up with a `docker-compose` file.
 
 **Repo directory structure:**
 
@@ -14,17 +16,22 @@ This
     │   │   │   ├── filesystem_stage_conn.py
     │   │   │   └── postgres_source_conn.py    
     │   │   └── sql
-    │   │       └── extract_retail_data.sql
+    │   │       ├── extract_load_retail_source.sql
+    │   │       ├── load_retail_stage.sql
+    │   │       └── transform_load_retail_warehouse.sql
     │   ├── retail_data_pipeline.py
     │   └── transformations.py
     ├── database-setup
-    │   └── retail.sql
+    │   ├── destinationdb.sql
+    │   └── sourcedb.sql
     ├── dest-data
     │   └── dummy.txt
     ├── filesystem
     │   ├── raw
     │   │   └── dummy.txt
     │   └── stage
+    │       ├── temp
+    │       ├   └── dummy.txt
     │       └── dummy.txt
     ├── great_expectations
     │   ├── checkpoints

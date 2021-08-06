@@ -87,6 +87,13 @@ load_retail_stage = PostgresOperator(
     params={"from_stage": f"/filesystem/stage/temp/retail_profiling-{date}.csv"},
 )
 
+validate_retail_warehouse_data = BashOperator(
+    dag=dag,
+    task_id="validate_retail_warehouse_data",
+    bash_command="cd /opt/airflow/; \
+great_expectations --v3-api checkpoint run retail_warehouse_checkpoint",
+)
+
 transform_load_retail_warehouse = PostgresOperator(
     dag=dag,
     task_id="transform_load_retail_warehouse",
@@ -105,7 +112,7 @@ end_of_data_pipeline = DummyOperator(dag=dag, task_id="end_of_data_pipeline")
     >> validate_retail_stage_data
     >> transform_retail_stage
     >> load_retail_stage
-    # >> validate_retail_warehouse_data
+    >> validate_retail_warehouse_data
     >> transform_load_retail_warehouse
     # >> validate_retail_dest_data
     >> end_of_data_pipeline

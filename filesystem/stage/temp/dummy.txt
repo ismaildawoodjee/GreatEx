@@ -1,0 +1,2 @@
+Postgres cannot copy Parquet files, so Parquet files are converted to CSV and placed
+here temporarily.

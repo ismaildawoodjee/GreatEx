@@ -4,6 +4,7 @@
 __pycache__
 logs
 temp
+!filesystem/stage/temp
 plugins
 *.csv
 *.parquet

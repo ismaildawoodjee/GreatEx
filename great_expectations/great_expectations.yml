@@ -17,32 +17,29 @@ datasources:
   retail_source:
     class_name: Datasource
     module_name: great_expectations.datasource
-    execution_engine:
-      class_name: SqlAlchemyExecutionEngine
-      module_name: great_expectations.execution_engine
-      connection_string: postgresql+psycopg2://sourcedb1:sourcedb1@postgres-source:5432/sourcedb
     data_connectors:
       default_runtime_data_connector_name:
+        module_name: great_expectations.datasource.data_connector
         batch_identifiers:
           - default_identifier_name
         class_name: RuntimeDataConnector
-        module_name: great_expectations.datasource.data_connector
       default_inferred_data_connector_name:
         include_schema_name: true
-        class_name: InferredAssetSqlDataConnector
         module_name: great_expectations.datasource.data_connector
+        class_name: InferredAssetSqlDataConnector
+    execution_engine:
+      connection_string: postgresql+psycopg2://sourcedb1:sourcedb1@postgres-source:5432/sourcedb
+      class_name: SqlAlchemyExecutionEngine
+      module_name: great_expectations.execution_engine
   retail_load:
     class_name: Datasource
     module_name: great_expectations.datasource
-    execution_engine:
-      class_name: PandasExecutionEngine
-      module_name: great_expectations.execution_engine
     data_connectors:
       default_runtime_data_connector_name:
+        module_name: great_expectations.datasource.data_connector
         batch_identifiers:
           - default_identifier_name
         class_name: RuntimeDataConnector
-        module_name: great_expectations.datasource.data_connector
       default_inferred_data_connector_name:
         default_regex:
           group_names:
@@ -51,21 +48,21 @@ datasources:
             - month
             - day
           pattern: (.*)(-\d{4})-(\d{2})-(\d{2})\.csv
+        module_name: great_expectations.datasource.data_connector
         base_directory: ../filesystem/raw
         class_name: InferredAssetFilesystemDataConnector
-        module_name: great_expectations.datasource.data_connector
-  retail_transform:
-    class_name: Datasource
-    module_name: great_expectations.datasource
     execution_engine:
       class_name: PandasExecutionEngine
       module_name: great_expectations.execution_engine
+  retail_transform:
+    class_name: Datasource
+    module_name: great_expectations.datasource
     data_connectors:
       default_runtime_data_connector_name:
+        module_name: great_expectations.datasource.data_connector
         batch_identifiers:
           - default_identifier_name
         class_name: RuntimeDataConnector
-        module_name: great_expectations.datasource.data_connector
       default_inferred_data_connector_name:
         default_regex:
           group_names:
@@ -75,9 +72,29 @@ datasources:
             - day
             - parquet_compression
           pattern: (.*)(-\d{4})-(\d{2})-(\d{2})\.(.*)\.parquet
+        module_name: great_expectations.datasource.data_connector
         base_directory: ../filesystem/stage
         class_name: InferredAssetFilesystemDataConnector
+    execution_engine:
+      class_name: PandasExecutionEngine
+      module_name: great_expectations.execution_engine
+  retail_warehouse:
+    class_name: Datasource
+    module_name: great_expectations.datasource
+    data_connectors:
+      default_runtime_data_connector_name:
         module_name: great_expectations.datasource.data_connector
+        batch_identifiers:
+          - default_identifier_name
+        class_name: RuntimeDataConnector
+      default_inferred_data_connector_name:
+        include_schema_name: true
+        module_name: great_expectations.datasource.data_connector
+        class_name: InferredAssetSqlDataConnector
+    execution_engine:
+      connection_string: postgresql+psycopg2://destdb1:destdb1@localhost:5432/destdb
+      class_name: SqlAlchemyExecutionEngine
+      module_name: great_expectations.execution_engine
 config_variables_file_path: uncommitted/config_variables.yml
 
 # The plugins_directory will be added to your python path for custom modules
