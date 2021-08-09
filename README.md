@@ -18,7 +18,9 @@ it's easy to set it up with a `docker-compose` file.
     │   │   ├── python
     │   │   │   ├── filesystem_raw_conn.py
     │   │   │   ├── filesystem_stage_conn.py
-    │   │   │   └── postgres_source_conn.py    
+    │   │   │   ├── postgres_dest_conn.py
+    │   │   │   ├── postgres_source_conn.py
+    │   │   │   └── postgres_warehouse_conn.py    
     │   │   └── sql
     │   │       ├── extract_load_retail_source.sql
     │   │       ├── load_retail_stage.sql
@@ -39,11 +41,14 @@ it's easy to set it up with a `docker-compose` file.
     │       └── dummy.txt
     ├── great_expectations
     │   ├── checkpoints
+    │   │   ├── retail_dest_checkpoint.yml
     │   │   ├── retail_load_checkpoint.yml
     │   │   ├── retail_source_checkpoint.yml
-    │   │   └── retail_transform_checkpoint.yml
+    │   │   ├── retail_transform_checkpoint.yml
+    │   │   └── retail_warehouse_checkpoint.yml
     │   ├── expectations
     │   │   ├── .ge_store_backend_id
+    │   │   ├── retail_dest_suite.json
     │   │   └── retail_source_suite.json
     │   ├── uncommitted
     │   │   └── config_variables.yml
