@@ -6,6 +6,10 @@ This project looks at how Great Expectations can be used to ensure data quality 
 pipeline. All the databases and Airflow components are designed to run within Docker containers, so that
 it's easy to set it up with a `docker-compose` file.
 
+[**Official Documentation**](https://docs.greatexpectations.io/en/latest/) - the main official docs
+
+[**Non-official Documentation**](https://knoxpod.netlify.app/docs/) - not official, but has clearer guides on Python/YAML configuration steps
+
 **Repo directory structure:**
 
     .
