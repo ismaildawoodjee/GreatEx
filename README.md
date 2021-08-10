@@ -4,7 +4,8 @@
 
 This project looks at how Great Expectations can be used to ensure data quality within an Airflow
 pipeline. All the databases and Airflow components are designed to run within Docker containers, so that
-it's easy to set it up with a `docker-compose` file.
+it's easy to set it up with a `docker-compose` file. The setup for this architecture is supposed to run on
+Windows OS, but a very similar setup can be done to run on Linux as well.
 
 [**Official Documentation**](https://docs.greatexpectations.io/en/latest/) - the main official docs
 
