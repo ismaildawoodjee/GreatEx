@@ -1,3 +1,5 @@
 great_expectations
+sqlalchemy
+psycopg2-binary
 pyarrow
 fastparquet
