@@ -8,3 +8,4 @@ temp
 plugins
 *.csv
 *.parquet
+*.log
