@@ -32,7 +32,7 @@ dag = DAG(
     # },
 )
 
-# Generate Python checkpoint script and run it to validate, 
+# Generate Python checkpoint script and run it to validate,
 # if fails it generates link to Data Docs (send link and custom error message to Airflow logs)
 # GUI or web app to make it easy for users to configure GE datasources, expectations, checkpoints, etc.
 validate_retail_source_data = BashOperator(

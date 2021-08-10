@@ -74,7 +74,7 @@ def sourcedb_conn():
         )
 
     else:
-        # context.add_datasource(**sourcedb_config)
+        context.add_datasource(**sourcedb_config)
         logging.info("Added database config to `great_expectations.yml`")
 
 
@@ -147,7 +147,7 @@ and regex pattern "{RAW_DATA_REGEX_PATTERN}" are correct.
         )
 
     else:
-        # context.add_datasource(**raw_data_config)
+        context.add_datasource(**raw_data_config)
         logging.info("Added raw data file config to `great_expectations.yml` file")
 
 
@@ -220,10 +220,128 @@ and regex pattern "{STAGE_DATA_REGEX_PATTERN}" are correct.
         )
 
     else:
-        # context.add_datasource(**stage_data_config)
+        context.add_datasource(**stage_data_config)
         logging.info("Added stage data file config to `great_expectations.yml` file")
+
+
+def warehousedb_conn():
+
+    WAREHOUSEDB_NAME = "retail_warehouse"  # name of Datasource (can be anything)
+    WAREHOUSEDB_CONN = "postgresql+psycopg2://destdb1:destdb1@localhost:5434/destdb"
+    INCLUDE_SCHEMA_NAME = True  # to specify schema name when calling BatchRequest
+    DATA_ASSET_NAME = "stage.retail_profiling"
+
+    warehousedb_config = {
+        "name": WAREHOUSEDB_NAME,
+        "class_name": "Datasource",
+        "execution_engine": {
+            "class_name": "SqlAlchemyExecutionEngine",
+            "connection_string": WAREHOUSEDB_CONN,
+        },
+        "data_connectors": {
+            "default_runtime_data_connector_name": {
+                "class_name": "RuntimeDataConnector",
+                "batch_identifiers": ["default_identifier_name"],
+            },
+            "default_inferred_data_connector_name": {
+                "class_name": "InferredAssetSqlDataConnector",
+                "name": "whole_table",
+                "include_schema_name": INCLUDE_SCHEMA_NAME,
+            },
+        },
+    }
+
+    try:
+        # connect to the datasource and sample out about 1000 rows just to confirm
+        context.test_yaml_config(yaml.dump(warehousedb_config))
+        batch_request = RuntimeBatchRequest(
+            datasource_name=WAREHOUSEDB_NAME,
+            data_connector_name="default_runtime_data_connector_name",
+            data_asset_name=DATA_ASSET_NAME,
+            runtime_parameters={"query": f"SELECT * from {DATA_ASSET_NAME} LIMIT 1000"},
+            batch_identifiers={
+                "default_identifier_name": "First 1000 rows for profiling retail source data"
+            },
+        )
+        # empty Expectation Test Suite, its only purpose is to validate the Datasource connection
+        context.create_expectation_suite(
+            expectation_suite_name="test_suite", overwrite_existing=True
+        )
+        validator = context.get_validator(
+            batch_request=batch_request, expectation_suite_name="test_suite"
+        )
+        print(validator.head())
+
+    except Exception as ex:
+        logging.exception(
+            f"Cannot connect to database with connection string {WAREHOUSEDB_CONN}"
+        )
+
+    else:
+        context.add_datasource(**warehousedb_config)
+        logging.info("Added database config to `great_expectations.yml`")
+
+
+def destdb_conn():
+
+    DESTDB_NAME = "retail_dest"  # name of Datasource (can be anything)
+    DESTDB_CONN = "postgresql+psycopg2://destdb1:destdb1@localhost:5434/destdb"
+    INCLUDE_SCHEMA_NAME = True  # to specify schema name when calling BatchRequest
+    DATA_ASSET_NAME = "public.retail_profiling"
+
+    warehousedb_config = {
+        "name": DESTDB_NAME,
+        "class_name": "Datasource",
+        "execution_engine": {
+            "class_name": "SqlAlchemyExecutionEngine",
+            "connection_string": DESTDB_CONN,
+        },
+        "data_connectors": {
+            "default_runtime_data_connector_name": {
+                "class_name": "RuntimeDataConnector",
+                "batch_identifiers": ["default_identifier_name"],
+            },
+            "default_inferred_data_connector_name": {
+                "class_name": "InferredAssetSqlDataConnector",
+                "name": "whole_table",
+                "include_schema_name": INCLUDE_SCHEMA_NAME,
+            },
+        },
+    }
+
+    try:
+        # connect to the datasource and sample out about 1000 rows just to confirm
+        context.test_yaml_config(yaml.dump(warehousedb_config))
+        batch_request = RuntimeBatchRequest(
+            datasource_name=DESTDB_NAME,
+            data_connector_name="default_runtime_data_connector_name",
+            data_asset_name=DATA_ASSET_NAME,
+            runtime_parameters={"query": f"SELECT * from {DATA_ASSET_NAME} LIMIT 1000"},
+            batch_identifiers={
+                "default_identifier_name": "First 1000 rows for profiling retail source data"
+            },
+        )
+        # empty Expectation Test Suite, its only purpose is to validate the Datasource connection
+        context.create_expectation_suite(
+            expectation_suite_name="test_suite", overwrite_existing=True
+        )
+        validator = context.get_validator(
+            batch_request=batch_request, expectation_suite_name="test_suite"
+        )
+        print(validator.head())
+
+    except Exception as ex:
+        logging.exception(
+            f"Cannot connect to database with connection string {DESTDB_CONN}"
+        )
+
+    else:
+        # context.add_datasource(**warehousedb_config)
+        logging.info("Added database config to `great_expectations.yml`")
 
 
 # sourcedb_conn()
 # raw_data_conn()
-stage_data_conn()
+# stage_data_conn()
+# warehousedb_conn()
+destdb_conn()
