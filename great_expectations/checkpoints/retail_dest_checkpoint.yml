@@ -3,7 +3,7 @@ config_version: 1.0
 template_name:
 module_name: great_expectations.checkpoint
 class_name: Checkpoint
-run_name_template: '%Y%m%d-%H%M%S-my-run-name-template'
+run_name_template:
 expectation_suite_name:
 batch_request:
 action_list:
@@ -26,6 +26,6 @@ validations:
       data_asset_name: public.retail_profiling
       data_connector_query:
         index: -1
-    expectation_suite_name: retail_dest_suite
+    expectation_suite_name: test_suite
 profilers: []
 ge_cloud_id:
