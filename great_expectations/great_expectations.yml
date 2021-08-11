@@ -18,7 +18,7 @@ datasources:
     execution_engine:
       class_name: SqlAlchemyExecutionEngine
       module_name: great_expectations.execution_engine
-      connection_string: ${SOURCEDB_CONN}  # postgresql+psycopg2://sourcedb1:sourcedb1@localhost:5433/sourcedb
+      connection_string: ${SOURCEDB_CONN}
     class_name: Datasource
     module_name: great_expectations.datasource
     data_connectors:
@@ -82,7 +82,7 @@ datasources:
     execution_engine:
       class_name: SqlAlchemyExecutionEngine
       module_name: great_expectations.execution_engine
-      connection_string: ${DESTDB_CONN}  # postgresql+psycopg2://destdb1:destdb1@localhost:5434/destdb
+      connection_string: ${DESTDB_CONN}
     class_name: Datasource
     module_name: great_expectations.datasource
     data_connectors:
@@ -99,7 +99,7 @@ datasources:
     execution_engine:
       class_name: SqlAlchemyExecutionEngine
       module_name: great_expectations.execution_engine
-      connection_string: ${DESTDB_CONN}  # postgresql+psycopg2://destdb1:destdb1@localhost:5434/destdb
+      connection_string: ${DESTDB_CONN}
     class_name: Datasource
     module_name: great_expectations.datasource
     data_connectors:

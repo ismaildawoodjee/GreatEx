@@ -8,6 +8,7 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.bash_operator import BashOperator
 
 from transformations import transform_raw_data, root_path, date, transform_stage_data
+from validations import validate_checkpoint
 
 default_args = {
     "owner": "airflow",
@@ -27,20 +28,24 @@ dag = DAG(
     default_args=default_args,
     schedule_interval="0 16 * * *",
     max_active_runs=1,
-    # user_defined_macros={
-    #     "ds": lambda ds: dict(zip(["year", "month", "day"], ds.split("-")))
-    # },
 )
 
 # Generate Python checkpoint script and run it to validate,
 # if fails it generates link to Data Docs (send link and custom error message to Airflow logs)
-# GUI or web app to make it easy for users to configure GE datasources, expectations, checkpoints, etc.
-validate_retail_source_data = BashOperator(
+# Google Sheets for users to fill in and configure GE datasources, expectations, checkpoints, etc.
+validate_retail_source_data = PythonOperator(
     dag=dag,
     task_id="validate_retail_source_data",
-    bash_command="cd /opt/airflow/; \
-great_expectations --v3-api checkpoint run retail_source_checkpoint",
+    python_callable=validate_checkpoint,
+    op_kwargs={"checkpoint_name": "retail_source_checkpoint"},
 )
+
+# validate_retail_source_data = BashOperator(
+#     dag=dag,
+#     task_id="validate_retail_source_data",
+#     bash_command="cd /opt/airflow/; \
+# great_expectations --v3-api checkpoint run retail_source_checkpoint",
+# )
 
 extract_load_retail_source = PostgresOperator(
     dag=dag,
@@ -102,7 +107,6 @@ transform_load_retail_warehouse = PostgresOperator(
     task_id="transform_load_retail_warehouse",
     sql="./scripts/sql/transform_load_retail_warehouse.sql",
     postgres_conn_id="postgres_dest",
-    # params={"to_raw": f"/filesystem/raw/retail_profiling-{date}.csv"},
 )
 
 validate_retail_dest_data = BashOperator(

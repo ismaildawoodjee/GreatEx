@@ -1,7 +1,23 @@
 {
   "data_asset_type": null,
   "expectation_suite_name": "test_suite",
-  "expectations": [],
+  "expectations": [
+    {
+      "expectation_type": "expect_table_columns_to_match_ordered_list",
+      "kwargs": {
+        "column_list": [
+          "stock_code",
+          "detail",
+          "quantity",
+          "invoice_date",
+          "unit_price",
+          "customer_id",
+          "country"
+        ]
+      },
+      "meta": {}
+    }
+  ],
   "meta": {
     "great_expectations_version": "0.13.25"
   }
