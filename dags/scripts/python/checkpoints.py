@@ -28,6 +28,7 @@ class SimpleCheckpoint:
         expectation_suite_name,
         data_connector_name="default_inferred_data_connector_name",
     ) -> str:
+
         yaml_config = f"""
         name: {checkpoint_name}
         config_version: 1

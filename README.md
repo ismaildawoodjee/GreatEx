@@ -7,11 +7,14 @@ pipeline. All the databases and Airflow components are designed to run within Do
 it's easy to set it up with a `docker-compose` file. The setup for this architecture is supposed to run on
 Windows OS, but a very similar setup can be done to run on Linux as well.
 
+I will be using Great Expectations `v0.13.25` and the Version 3 API, Docker `v20.10.7` (and Docker Desktop in Windows),
+`docker-compose` `v1.29.2`, Python `v3.8.10` for the containers (`v3.9.5` on local machine), and Windows OS (Windows 10).
+
 [**Official Documentation**](https://docs.greatexpectations.io/en/latest/) - the new official documentation
 
 [**Legacy Documentation**](https://legacy.docs.greatexpectations.io/en/latest/) - old legacy docs
 
-**Repo directory structure:**
+**Repo directory structure:** (need to update)
 
     .
     ├── dags
@@ -77,7 +80,12 @@ Prepare a Python virtual environment,
 
     python -m venv .venv; .venv\Scripts\Activate.ps1
 
-And initialize the Airflow containers.
+Install Great Expectations and required dependencies with
+
+    pip install -r requirementst.txt
+
+And initialize the Airflow containers. The Dockerfile extends the Airflow image to
+install Python libraries within the containers as well.
 
     docker-compose up airflow-init
 
@@ -105,12 +113,20 @@ The original `docker-compose` file for setting up Airflow containers was obtaine
 for running Airflow in Docker. I modified it in several different ways:
 
 - Set `AIRFLOW__CORE__LOAD_EXAMPLES` to `false` to declutter the Airflow UI.
+
 - An additional environment variable `AIRFLOW_CONN_POSTGRES_DEFAULT` for the Airflow meta database, which I renamed to `postgres-airflow`.
+
 - I wrote a Dockerfile to extend the image (according to [the official docs](https://airflow.apache.org/docs/docker-stack/build.html#extending-the-image))
   so that the Great Expectations library and other packages will be installed inside the containers.
+
 - Added two additional PostgresDB containers `postgres-source` and `postgres-dest` to represent the retail data source and the destination data warehouse.
+
 - For Airflow to properly orchestrate these containers, their volumes and port mappings were also specified, e.g. "5433:5432" for the source database so that it
   won't conflict with Airflow's meta database mapping "5432:5432".
+
+- The `great_expectations` folder, `filesystem` folder, `database-setup`, `source-data` and `dest-data` folders also need to be
+  mounted as volumes to the appropriate containers so that Airflow can access them.
+
 - The service names for the containers are also their hostnames, so we should keep that in mind
   (else Docker will keep searching for the wrong services and won't find them). Below, I changed the service name from the default `postgres` to `postgres-airflow`,
   so the hostname in the connection strings must also be changed:
@@ -118,6 +134,7 @@ for running Airflow in Docker. I modified it in several different ways:
     ![service_name == hostname](assets/images/service_name_hostname.png)
 
   This also applies to username, password and database names.
+
 - The Docker images for Airflow and Postgres can be any supported version, but I specified them to use the `latest` tag, and used Python version 3.8.
 
 ## Retail Pipeline DAG
@@ -149,3 +166,23 @@ Currently, the Airflow DAG looks like the following:
 - `end_of_data_pipeline`: A DummyOperator to mark the end of the DAG.
 
 ## Configuring Great Expectations
+
+Except for the very first step of creating a Data Context (the Great Expectations folder and associated files), all of the
+configuration for connecting to Datasources, creating Expectation Suites, creating Checkpoints and validating them, will be
+done using Python scripts, without any Jupyter Notebooks. I'll be using Great Expectations Version 3 API.
+
+1. The first step is to create a Data Context from the command line:
+
+        great_expectations --v3-api init
+
+    This will create a `great_expectations` folder.
+
+2. The next step is to connect to Datasources. Here, we have 5 Datasources, three of them are tables in relational databases,
+   one is a CSV file in the raw directory, and another is a Parquet file in the stage directory.
+
+      - Postgres source database `sourcedb` with schema `ecommerce`, where the source data comes from (`postgres-source` container)
+      - Raw directory in the `filesystem` (`filesystem/raw`)
+      - Stage directory in the `filesystem` (`filesystem/stage`)
+      - Postgres destination database `destdb` with schema `stage` (`postgres-dest` container), the penultimate location where transformed data is
+        staged before moving it to the public schema.
+      - Same destination database but with schema `public`, where the final transformed data is located

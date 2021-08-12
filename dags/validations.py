@@ -26,6 +26,8 @@ def validate_checkpoint(checkpoint_name):
     if return_code:
         logging.error(validation_stdout)
 
+        # TODO: could build Data Docs to S3 or somewhere, not just within the container
+
         docs_process = subprocess.Popen(
             ["great_expectations", "--v3-api", "docs", "list"],
             stdout=subprocess.PIPE,

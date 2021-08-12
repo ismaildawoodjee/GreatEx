@@ -23,7 +23,8 @@ def sourcedb_conn():
     DATASOURCE_NAME = "retail_source"  # name of Datasource (can be anything)
     DATABASE_CONN = "postgresql+psycopg2://sourcedb1:sourcedb1@localhost:5433/sourcedb"
     INCLUDE_SCHEMA_NAME = True  # to specify schema name when calling BatchRequest
-    DATA_ASSET_NAME = "ecommerce.retail_profiling"
+    SCHEMA_NAME = "ecommerce"
+    DATA_ASSET_NAME = f"{SCHEMA_NAME}.retail_profiling"
 
     sourcedb_config = {
         "name": DATASOURCE_NAME,
@@ -229,7 +230,8 @@ def warehousedb_conn():
     DATASOURCE_NAME = "retail_warehouse"  # name of Datasource (can be anything)
     DATABASE_CONN = "postgresql+psycopg2://destdb1:destdb1@localhost:5434/destdb"
     INCLUDE_SCHEMA_NAME = True  # to specify schema name when calling BatchRequest
-    DATA_ASSET_NAME = "stage.retail_profiling"
+    SCHEMA_NAME = "stage"
+    DATA_ASSET_NAME = f"{SCHEMA_NAME}.retail_profiling"
 
     warehousedb_config = {
         "name": DATASOURCE_NAME,
@@ -287,7 +289,8 @@ def destdb_conn():
     DATASOURCE_NAME = "retail_dest"  # name of Datasource (can be anything)
     DATABASE_CONN = "postgresql+psycopg2://destdb1:destdb1@localhost:5434/destdb"
     INCLUDE_SCHEMA_NAME = True  # to specify schema name when calling BatchRequest
-    DATA_ASSET_NAME = "public.retail_profiling"
+    SCHEMA_NAME = "public"
+    DATA_ASSET_NAME = f"{SCHEMA_NAME}.retail_profiling"
 
     warehousedb_config = {
         "name": DATASOURCE_NAME,
