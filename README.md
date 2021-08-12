@@ -10,6 +10,8 @@ Windows OS, but a very similar setup can be done to run on Linux as well.
 I will be using Great Expectations `v0.13.25` and the Version 3 API, Docker `v20.10.7` (and Docker Desktop in Windows),
 `docker-compose` `v1.29.2`, Python `v3.8.10` for the containers (`v3.9.5` on local machine), and Windows OS (Windows 10).
 
+[**Google Sheet to fill out Great Expectations configuration**](https://docs.google.com/spreadsheets/d/1yO5cSmHFrE78R7kcUfP7fNzZcRpgG5eieApFwZ0f8oY/edit?usp=sharing)
+
 [**Official Documentation**](https://docs.greatexpectations.io/en/latest/) - the new official documentation
 
 [**Legacy Documentation**](https://legacy.docs.greatexpectations.io/en/latest/) - old legacy docs
@@ -180,7 +182,7 @@ done using Python scripts, without any Jupyter Notebooks. I'll be using Great Ex
 2. The next step is to connect to Datasources. Here, we have 5 Datasources, three of them are tables in relational databases,
    one is a CSV file in the raw directory, and another is a Parquet file in the stage directory.
 
-      - Postgres source database `sourcedb` with schema `ecommerce`, where the source data comes from (`postgres-source` container)
+      - Postgres source database `sourcedb` with schema `ecommerce`, where the source data is located (`postgres-source` container)
       - Raw directory in the `filesystem` (`filesystem/raw`)
       - Stage directory in the `filesystem` (`filesystem/stage`)
       - Postgres destination database `destdb` with schema `stage` (`postgres-dest` container), the penultimate location where transformed data is
