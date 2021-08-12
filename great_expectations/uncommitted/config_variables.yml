@@ -17,5 +17,5 @@
 # https://docs.greatexpectations.io/en/latest/guides/how_to_guides/configuring_data_contexts/how_to_use_a_yaml_file_or_environment_variables_to_populate_credentials.html
 
 instance_id: 857d7cf9-1fd3-48d2-9a7e-e2f9d77518cf
-SOURCEDB_CONN: "postgresql+psycopg2://sourcedb1:sourcedb1@localhost:5433/sourcedb"
+SOURCEDB_CONN: "postgresql+psycopg2://sourcedb1:sourcedb1@postgres-source:5432/sourcedb"
 DESTDB_CONN: "postgresql+psycopg2://destdb1:destdb1@postgres-dest:5432/destdb"

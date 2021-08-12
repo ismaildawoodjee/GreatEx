@@ -40,13 +40,6 @@ validate_retail_source_data = PythonOperator(
     op_kwargs={"checkpoint_name": "retail_source_checkpoint"},
 )
 
-# validate_retail_source_data = BashOperator(
-#     dag=dag,
-#     task_id="validate_retail_source_data",
-#     bash_command="cd /opt/airflow/; \
-# great_expectations --v3-api checkpoint run retail_source_checkpoint",
-# )
-
 extract_load_retail_source = PostgresOperator(
     dag=dag,
     task_id="extract_load_retail_source",
@@ -55,11 +48,11 @@ extract_load_retail_source = PostgresOperator(
     params={"to_raw": f"/filesystem/raw/retail_profiling-{date}.csv"},
 )
 
-validate_retail_raw_data = BashOperator(
+validate_retail_raw_data = PythonOperator(
     dag=dag,
     task_id="validate_retail_raw_data",
-    bash_command="cd /opt/airflow/; \
-great_expectations --v3-api checkpoint run retail_load_checkpoint",
+    python_callable=validate_checkpoint,
+    op_kwargs={"checkpoint_name": "retail_load_checkpoint"},
 )
 
 transform_load_retail_raw = PythonOperator(
@@ -71,11 +64,11 @@ transform_load_retail_raw = PythonOperator(
     },
 )
 
-validate_retail_stage_data = BashOperator(
+validate_retail_stage_data = PythonOperator(
     dag=dag,
     task_id="validate_retail_stage_data",
-    bash_command="cd /opt/airflow/; \
-great_expectations --v3-api checkpoint run retail_transform_checkpoint",
+    python_callable=validate_checkpoint,
+    op_kwargs={"checkpoint_name": "retail_transform_checkpoint"},
 )
 
 transform_retail_stage = PythonOperator(
@@ -95,11 +88,11 @@ load_retail_stage = PostgresOperator(
     params={"from_stage": f"/filesystem/stage/temp/retail_profiling-{date}.csv"},
 )
 
-validate_retail_warehouse_data = BashOperator(
+validate_retail_warehouse_data = PythonOperator(
     dag=dag,
     task_id="validate_retail_warehouse_data",
-    bash_command="cd /opt/airflow/; \
-great_expectations --v3-api checkpoint run retail_warehouse_checkpoint",
+    python_callable=validate_checkpoint,
+    op_kwargs={"checkpoint_name": "retail_warehouse_checkpoint"},
 )
 
 transform_load_retail_warehouse = PostgresOperator(
@@ -109,11 +102,11 @@ transform_load_retail_warehouse = PostgresOperator(
     postgres_conn_id="postgres_dest",
 )
 
-validate_retail_dest_data = BashOperator(
+validate_retail_dest_data = PythonOperator(
     dag=dag,
     task_id="validate_retail_dest_data",
-    bash_command="cd /opt/airflow/; \
-great_expectations --v3-api checkpoint run retail_dest_checkpoint",
+    python_callable=validate_checkpoint,
+    op_kwargs={"checkpoint_name": "retail_dest_checkpoint"},
 )
 
 end_of_data_pipeline = DummyOperator(dag=dag, task_id="end_of_data_pipeline")
