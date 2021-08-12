@@ -7,9 +7,9 @@ pipeline. All the databases and Airflow components are designed to run within Do
 it's easy to set it up with a `docker-compose` file. The setup for this architecture is supposed to run on
 Windows OS, but a very similar setup can be done to run on Linux as well.
 
-[**Official Documentation**](https://docs.greatexpectations.io/en/latest/) - the main official docs
+[**Official Documentation**](https://docs.greatexpectations.io/en/latest/) - the new official documentation
 
-[**Non-official Documentation**](https://knoxpod.netlify.app/docs/) - not official, but has clearer guides on Python/YAML configuration steps
+[**Legacy Documentation**](https://legacy.docs.greatexpectations.io/en/latest/) - old legacy docs
 
 **Repo directory structure:**
 
