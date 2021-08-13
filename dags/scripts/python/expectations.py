@@ -61,9 +61,9 @@ def create_sourcedb_expectation_suite():
         column="quantity", min_value=0, max_value=0
     )
     validator.expect_column_values_to_not_be_null(column="quantity")
-    validator.expect_column_values_to_match_strftime_format(
-        column="invoice_date", strftime_format="%Y-%m-%d %H:%M:%S"
-    )
+    # validator.expect_column_values_to_match_strftime_format(
+    #     column="invoice_date", strftime_format="%Y-%m-%d %H:%M:%S"
+    # )  # unfortunately, there is no strf_format expectation for SQL datasources
 
     # Save expectations to JSON
     validator.save_expectation_suite(discard_failed_expectations=False)
@@ -111,13 +111,13 @@ def create_destdb_expectation_suite():
         column="unit_price", min_value=0, max_value=0
     )
     validator.expect_column_values_to_not_be_null(column="quantity")
-    validator.expect_column_values_to_match_strftime_format(
-        column="invoice_date", strftime_format="%Y-%m-%d %H:%M:%S"
-    )
+    # validator.expect_column_values_to_match_strftime_format(
+    #     column="invoice_date", strftime_format="%Y-%m-%d %H:%M:%S"
+    # )  # unfortunately, there is no strf_format expectation for SQL datasources
 
     # Save expectations to JSON
     validator.save_expectation_suite(discard_failed_expectations=False)
 
 
-create_sourcedb_expectation_suite()
-create_destdb_expectation_suite()
+# create_sourcedb_expectation_suite()
+# create_destdb_expectation_suite()

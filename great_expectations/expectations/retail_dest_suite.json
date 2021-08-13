@@ -31,14 +31,6 @@
         "column": "quantity"
       },
       "meta": {}
-    },
-    {
-      "expectation_type": "expect_column_values_to_match_strftime_format",
-      "kwargs": {
-        "column": "invoice_date",
-        "strftime_format": "%Y-%m-%d %H:%M:%S"
-      },
-      "meta": {}
     }
   ],
   "meta": {
