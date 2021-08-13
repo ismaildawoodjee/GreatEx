@@ -8,7 +8,7 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.bash_operator import BashOperator
 
 from transformations import transform_raw_data, root_path, date, transform_stage_data
-from validations import validate_checkpoint
+from validation import validate_checkpoint
 
 default_args = {
     "owner": "airflow",

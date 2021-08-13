@@ -15,6 +15,11 @@ def validate_checkpoint(checkpoint_name):
         either make the Airflow Task incorrectly succeed, or completely fail
         without being up for retry.
     """
+    LOCAL_DIRECTORY = r"C:\Users\DELL\Desktop\Darmadia\GreatEx"
+    DATA_DOCS_LOCATION = (
+        "great_expectations/uncommitted/data_docs/local_site/index.html"
+    )
+
     validation_process = subprocess.Popen(
         ["great_expectations", "--v3-api", "checkpoint", "run", checkpoint_name],
         stdout=subprocess.PIPE,
@@ -35,6 +40,7 @@ def validate_checkpoint(checkpoint_name):
         )
         docs_stdout = docs_process.communicate()[0]
         logging.info(docs_stdout)
+        logging.info(f"{LOCAL_DIRECTORY}/{DATA_DOCS_LOCATION}")
 
         raise AirflowException(
             "Checkpoint validation failed. Inspect the Data Docs for more information."

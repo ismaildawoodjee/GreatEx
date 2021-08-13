@@ -1,5 +1,12 @@
 # Airflow Data Pipeline Validation with Great Expectations
 
+- [Airflow Data Pipeline Validation with Great Expectations](#airflow-data-pipeline-validation-with-great-expectations)
+  - [Introduction](#introduction)
+  - [Setup](#setup)
+  - [About the `docker-compose` File](#about-the-docker-compose-file)
+  - [Retail Pipeline DAG](#retail-pipeline-dag)
+  - [Configuring Great Expectations](#configuring-great-expectations)
+
 ## Introduction
 
 This project looks at how Great Expectations can be used to ensure data quality within an Airflow
@@ -16,7 +23,7 @@ I will be using Great Expectations `v0.13.25` and the Version 3 API, Docker `v20
 
 [**Legacy Documentation**](https://legacy.docs.greatexpectations.io/en/latest/) - old legacy docs
 
-**Repo directory structure:** (need to update)
+**Repo directory structure:**
 
     .
     ├── dags
@@ -45,7 +52,7 @@ I will be using Great Expectations `v0.13.25` and the Version 3 API, Docker `v20
     │   │   └── dummy.txt
     │   └── stage
     │       ├── temp
-    │       ├   └── dummy.txt
+    │       │   └── dummy.txt
     │       └── dummy.txt
     ├── great_expectations
     │   ├── checkpoints
@@ -149,7 +156,7 @@ Currently, the Airflow DAG looks like the following:
 
 ![Retail pipeline DAG](assets/images/current_dag.png)
 
-- `validate_retail_source_data`: This task uses the BashOperator to run a GreatEx Checkpoint for validating data in the
+- `validate_retail_source_data`: This task uses the PythonOperator to run a GreatEx Checkpoint for validating data in the
   `postgres-source` database. A Checkpoint is a pair between a Datasource and an Expectation Suite, so to create a Checkpoint,
   both the Datasource and the Expectation Suite must be present (see the section on [Configuring Great Expectations](#configuring-great-expectations)).
 
@@ -168,6 +175,26 @@ Currently, the Airflow DAG looks like the following:
 - `validate_retail_stage_data`: After the Parquet file has landed into the `stage` folder, another Checkpoint validation takes place.
   A different Expectation Suite can be created and paired up with the staged Datasource
   (I used the same Expectation Suite since there weren't any significant transformations).
+
+- `transform_retail_stage`: This task converts the Parquet file format into CSV so that Postgres can copy the data. Postgres, unfortunately,
+  does not have the functionality to copy Parquet files, so this task converts Parquet to CSV and puts the resulting CSV file
+  into a temporary folder `temp` in the `filesystem/stage` directory. I could also implement a function to delete the temporary file after
+  copying, but it will add an extra step to the pipeline.
+
+- `load_retail_stage`: Once the Parquet file has been converted to CSV and put into the `temp` folder, Postgres can copy that file
+  and load it into the database, using the schema name `stage` for the staging component of the destination data warehouse.
+
+- `validate_retail_warehouse_data`: After the CSV file is copied into a PostgresDB table, we can validate that data to ensure that all
+  expectations are met. Again, the same Expectation Suite was used, but depending on the SQL script for the copy operation, a different
+  Suite can be created to match the data in the Postgres database.
+
+- `transform_load_retail_warehouse`: This task transforms the data table in the `stage` schema and loads it into the `public` schema.
+  Here, instead of loading all 8 columns, I chose to load 6 columns to represent a simple transformation. This transformation
+  can be more complex (perhaps consisting of joins, aggregates or modelling) or can consist of more data transformation steps before
+  the final loading step.
+
+- `validate_retail_dest_data`: The data arrives at its final destination in the `public` schema of the data warehouse. In this final task,
+  we ensure that the public-facing data meets the expectations and the Checkpoint validation passes before ending the pipeline.
 
 - `end_of_data_pipeline`: A DummyOperator to mark the end of the DAG.
 
