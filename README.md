@@ -22,20 +22,22 @@ I will be using Great Expectations `v0.13.25` and the Version 3 API, Docker `v20
     ├── dags
     │   ├── scripts
     │   │   ├── python
-    │   │   │   ├── filesystem_raw_conn.py
-    │   │   │   ├── filesystem_stage_conn.py
-    │   │   │   ├── postgres_dest_conn.py
-    │   │   │   ├── postgres_source_conn.py
-    │   │   │   └── postgres_warehouse_conn.py    
+    │   │   │   ├── checkpoints.py
+    │   │   │   ├── datasources.py
+    │   │   │   └── expectations.py   
     │   │   └── sql
     │   │       ├── extract_load_retail_source.sql
     │   │       ├── load_retail_stage.sql
     │   │       └── transform_load_retail_warehouse.sql
     │   ├── retail_data_pipeline.py
-    │   └── transformations.py
+    │   ├── transformations.py
+    │   └── validations.py
     ├── database-setup
     │   ├── destinationdb.sql
     │   └── sourcedb.sql
+    ├── debugging
+    │   ├── debug.log
+    │   └── logging.ini
     ├── dest-data
     │   └── dummy.txt
     ├── filesystem
@@ -54,8 +56,10 @@ I will be using Great Expectations `v0.13.25` and the Version 3 API, Docker `v20
     │   │   └── retail_warehouse_checkpoint.yml
     │   ├── expectations
     │   │   ├── .ge_store_backend_id
+    │   │   ├── example_suite.json
     │   │   ├── retail_dest_suite.json
-    │   │   └── retail_source_suite.json
+    │   │   ├── retail_source_suite.json
+    │   │   └── test_suite.json
     │   ├── uncommitted
     │   │   └── config_variables.yml
     │   ├── .gitignore

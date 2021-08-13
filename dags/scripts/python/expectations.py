@@ -21,8 +21,12 @@ def create_sourcedb_expectation_suite():
 
     EXPECTATION_SUITE_NAME = "retail_source_suite"
     DATASOURCE_NAME = "retail_source"
+    INCLUDE_SCHEMA_NAME = True
     SCHEMA_NAME = "ecommerce"
-    DATA_ASSET_NAME = f"{SCHEMA_NAME}.retail_profiling"
+    TABLE_NAME = "retail_profiling"
+    DATA_ASSET_NAME = (
+        f"{SCHEMA_NAME}.{TABLE_NAME}" if INCLUDE_SCHEMA_NAME else TABLE_NAME
+    )
 
     context.create_expectation_suite(EXPECTATION_SUITE_NAME, overwrite_existing=True)
 
@@ -69,8 +73,12 @@ def create_destdb_expectation_suite():
 
     EXPECTATION_SUITE_NAME = "retail_dest_suite"
     DATASOURCE_NAME = "retail_dest"
+    INCLUDE_SCHEMA_NAME = True
     SCHEMA_NAME = "public"
-    DATA_ASSET_NAME = f"{SCHEMA_NAME}.retail_profiling"
+    TABLE_NAME = "retail_profiling"
+    DATA_ASSET_NAME = (
+        f"{SCHEMA_NAME}.{TABLE_NAME}" if INCLUDE_SCHEMA_NAME else TABLE_NAME
+    )
 
     context.create_expectation_suite(EXPECTATION_SUITE_NAME, overwrite_existing=True)
 
