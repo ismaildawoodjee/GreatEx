@@ -40,7 +40,7 @@ def validate_checkpoint(checkpoint_name):
         )
         docs_stdout = docs_process.communicate()[0]
         logging.info(docs_stdout)
-        logging.info(f"{LOCAL_DIRECTORY}/{DATA_DOCS_LOCATION}")
+        logging.info(f"file:///{LOCAL_DIRECTORY}/{DATA_DOCS_LOCATION}")
 
         raise AirflowException(
             "Checkpoint validation failed. Inspect the Data Docs for more information."
