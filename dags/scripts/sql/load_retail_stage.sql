@@ -1,4 +1,5 @@
--- Unfortunately Postgres cannot copy Parquet data, so
+-- Unfortunately Postgres cannot copy Parquet data, so it has to copy CSV file
+-- from the `temp` folder
 CREATE SCHEMA IF NOT EXISTS stage;
 DROP TABLE IF EXISTS stage.retail_profiling;
 CREATE TABLE stage.retail_profiling (
