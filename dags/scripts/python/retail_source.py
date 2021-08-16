@@ -139,13 +139,13 @@ def create_expectation_suite(expectation_suite_name):
 
 
 def create_checkpoint(checkpoint_name):
-    
+
     context.test_yaml_config(yaml_config=checkpoint_config, pretty_print=True)
     context.add_checkpoint(**yaml.load(checkpoint_config))
     result = context.run_checkpoint(checkpoint_name)
     print(f'Successful checkpoint validation: {result["success"]}\n')
 
 
-# connect_to_datasource()
-# create_expectation_suite(expectation_suite_name=EXPECTATION_SUITE_NAME)
-# create_checkpoint(checkpoint_name=CHECKPOINT_NAME)
+connect_to_datasource()
+create_expectation_suite(expectation_suite_name=EXPECTATION_SUITE_NAME)
+create_checkpoint(checkpoint_name=CHECKPOINT_NAME)

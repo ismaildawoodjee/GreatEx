@@ -125,7 +125,7 @@ and regex pattern "{REGEX_PATTERN}" are correct.
 
 
 def create_expectation_suite(expectation_suite_name):
-    
+
     context.create_expectation_suite(expectation_suite_name, overwrite_existing=True)
     validator = context.get_validator(
         batch_request=batch_request, expectation_suite_name=expectation_suite_name
@@ -152,13 +152,13 @@ def create_expectation_suite(expectation_suite_name):
 
 
 def create_checkpoint(checkpoint_name):
-    
+
     context.test_yaml_config(yaml_config=checkpoint_config, pretty_print=True)
     context.add_checkpoint(**yaml.load(checkpoint_config))
     result = context.run_checkpoint(checkpoint_name)
     print(f'Successful checkpoint validation: {result["success"]}\n')
 
 
-# connect_to_datasource()
-# create_expectation_suite(expectation_suite_name=EXPECTATION_SUITE_NAME)
-# create_checkpoint(checkpoint_name=CHECKPOINT_NAME)
+connect_to_datasource()
+create_expectation_suite(expectation_suite_name=EXPECTATION_SUITE_NAME)
+create_checkpoint(checkpoint_name=CHECKPOINT_NAME)

@@ -104,7 +104,7 @@ install Python libraries within the containers as well.
 
 Start the containers in the background with:
 
-    docker-compose up -d
+    docker-compose up --build -d
 
 After this, we want to add our Postgres database connections to Airflow, for which I have provided
 a convenience script with `airflow_conn.ps1`. Run this Powershell script with:

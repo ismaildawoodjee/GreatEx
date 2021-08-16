@@ -48,6 +48,7 @@ def validate_checkpoint(checkpoint_name):
 
     else:
         logging.info(validation_stdout)
+        logging.info(f"file:///{LOCAL_DIRECTORY}/{DATA_DOCS_LOCATION}")
 
 
 # validate_checkpoint(checkpoint_name="retail_source_checkpoint")
