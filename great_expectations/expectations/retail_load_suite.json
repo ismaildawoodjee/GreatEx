@@ -1,0 +1,41 @@
+{
+  "data_asset_type": null,
+  "expectation_suite_name": "retail_load_suite",
+  "expectations": [
+    {
+      "expectation_type": "expect_table_columns_to_match_ordered_list",
+      "kwargs": {
+        "column_list": [
+          "invoice_number",
+          "stock_code",
+          "detail",
+          "quantity",
+          "invoice_date",
+          "unit_price",
+          "customer_id",
+          "country"
+        ]
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_min_to_be_between",
+      "kwargs": {
+        "column": "quantity",
+        "max_value": 0,
+        "min_value": 0
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "quantity"
+      },
+      "meta": {}
+    }
+  ],
+  "meta": {
+    "great_expectations_version": "0.13.25"
+  }
+}

@@ -17,6 +17,21 @@ action_list:
     action:
       class_name: UpdateDataDocsAction
       site_names: []
+  - name: email_on_validation_failure
+    action:
+      class_name: EmailAction
+      notify_on: failure
+      notify_with:
+      use_tls: true
+      use_ssl: false
+      renderer:
+        module_name: great_expectations.render.renderer.email_renderer
+        class_name: EmailRenderer
+      smtp_address: ${SMTP_ADDRESS}
+      smtp_port: ${SMTP_PORT}
+      sender_login: ${SENDER_LOGIN}
+      sender_password: ${SENDER_PASSWORD}
+      receiver_emails: ${RECEIVER_EMAILS}
 evaluation_parameters: {}
 runtime_configuration: {}
 validations:
@@ -26,6 +41,6 @@ validations:
       data_asset_name: stage.retail_profiling
       data_connector_query:
         index: -1
-    expectation_suite_name: retail_source_suite
+    expectation_suite_name: retail_warehouse_suite
 profilers: []
 ge_cloud_id:
