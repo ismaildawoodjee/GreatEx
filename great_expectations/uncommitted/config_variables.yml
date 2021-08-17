@@ -1,0 +1,36 @@
+# This config file supports variable substitution which enables: 1) keeping
+# secrets out of source control & 2) environment-based configuration changes
+# such as staging vs prod.
+#
+# When GE encounters substitution syntax (like `my_key: ${my_value}` or
+# `my_key: $my_value`) in the great_expectations.yml file, it will attempt
+# to replace the value of `my_key` with the value from an environment
+# variable `my_value` or a corresponding key read from this config file,
+# which is defined through the `config_variables_file_path`.
+# Environment variables take precedence over variables defined here.
+#
+# Substitution values defined here can be a simple (non-nested) value,
+# nested value such as a dictionary, or an environment variable (i.e. ${ENV_VAR})
+#
+#
+# https://docs.greatexpectations.io/en/latest/guides/how_to_guides/configuring_data_contexts/how_to_use_a_yaml_file_or_environment_variables_to_populate_credentials.html
+
+instance_id: f413089e-4924-4e60-91b9-f74af664c2c0
+SOURCEDB_CONN: "postgresql+psycopg2://sourcedb1:sourcedb1@postgres-source:5432/sourcedb"
+DESTDB_CONN: "postgresql+psycopg2://destdb1:destdb1@postgres-dest:5432/destdb"
+STOREDB_CONN: "postgresql+psycopg2://storedb1:storedb1@postgres-store:5432/storedb"
+
+SMTP_ADDRESS: smtp.gmail.com
+SMTP_PORT: 587
+SENDER_LOGIN: ${SENDER_LOGIN}
+SENDER_PASSWORD: ${SENDER_PASSWORD}
+RECEIVER_EMAILS: ${RECEIVER_EMAILS}
+
+VALIDATION_STORE_CREDS:
+    drivername: postgresql+psycopg2
+    host: "postgres-store"
+    port: "5432"
+    username: "storedb1"
+    password: "storedb1"
+    database: "storedb"
+    schema: validation

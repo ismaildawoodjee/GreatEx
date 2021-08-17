@@ -98,7 +98,8 @@ Install Great Expectations and required dependencies with
     pip install -r requirements.txt
 
 And initialize the Airflow containers. The Dockerfile extends the Airflow image to
-install Python libraries within the containers as well.
+install Python libraries within the containers as well. Ensure that Docker is running
+before executing the following commands.
 
     docker-compose up airflow-init
 
