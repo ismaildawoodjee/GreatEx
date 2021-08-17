@@ -91,7 +91,11 @@ Clone this repository,
 
 Prepare a Python virtual environment (assuming Windows OS),
 
-    python -m venv .venv; .venv\Scripts\Activate.ps1
+    python -m venv .venv; .venv\Scripts\activate
+
+If on a Linux OS, run the following:
+
+    python3 -m venv .venv; source .venv/bin/activate
 
 Install Great Expectations and required dependencies with
 
@@ -104,7 +108,7 @@ Reinitialize it by running:
 
 A warning will pop up that Great Expectations cannot find the credentials, but that
 can be ignored unless you want to test by running the pipeline locally. Since we're going
-to be running the pipeline on Airflow, the warning can be ignored.
+to be running the pipeline on Airflow containers, the warning can be ignored.
 
 Before initializing the Docker containers, make sure that there is an `.env` file
 in the root directory of `GreatEx`. This is the `.env-example` file in the repo, which should
@@ -123,6 +127,14 @@ containers as well. Initialize Airflow containers with:
 
     docker-compose up --build airflow-init
 
+On Linux OS, additional commands need to be run to provide permissions for read/write
+(prepending `sudo` and providing permissions where needed):
+
+    echo -e "\nAIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0" >> .env
+    mkdir ./logs ./plugins
+    chmod ug+rwx dags/* logs/* filesystem/* database-setup/* source-data/* dest-data/* great_expectations/*
+    docker-compose up --build airflow-init
+
 Then, start the containers in the background with:
 
     docker-compose up --build -d
@@ -131,6 +143,10 @@ After this, we want to add our Postgres database connections to Airflow, for whi
 a convenience script with `airflow_conn.ps1`. Run this Powershell script with:
 
     .\airflow_conn.ps1
+
+Or if using a Linux machine, run the Bash script below:
+
+    ./airflow_conn.sh
 
 If you are using VS Code, you can check the health of the containers with the Docker extension:
 
