@@ -89,7 +89,7 @@ Clone this repository,
 
     git clone https://github.com/ismaildawoodjee/GreatEx; cd GreatEx
 
-Prepare a Python virtual environment,
+Prepare a Python virtual environment (assuming Windows OS),
 
     python -m venv .venv; .venv\Scripts\Activate.ps1
 
@@ -97,13 +97,33 @@ Install Great Expectations and required dependencies with
 
     pip install -r requirements.txt
 
-And initialize the Airflow containers. The Dockerfile extends the Airflow image to
-install Python libraries within the containers as well. Ensure that Docker is running
-before executing the following commands.
+Currently, the `great_expectations` folder in this repo is partially initialized.
+Reinitialize it by running:
 
-    docker-compose up airflow-init
+    great_expectations --v3-api init
 
-Start the containers in the background with:
+A warning will pop up that Great Expectations cannot find the credentials, but that
+can be ignored unless you want to test by running the pipeline locally. Since we're going
+to be running the pipeline on Airflow, the warning can be ignored.
+
+Before initializing the Docker containers, make sure that there is an `.env` file
+in the root directory of `GreatEx`. This is the `.env-example` file in the repo, which should
+be **renamed** to `.env`.
+
+The database connections inside it should remain unchanged, but the final three fields
+highlighted below should be changed to the appropriate emails and passwords. If you're
+using Gmail, [less secure apps](https://support.google.com/accounts/answer/6010255?hl=en)
+of the Sender email should be turned on.
+
+![Environment variables configuration](assets/images/configuring_env_variables.png)
+
+Next, ensure that Docker is running before initializing the Airflow containers.
+The Dockerfile extends the Airflow image to install Python libraries within the
+containers as well. Initialize Airflow containers with:
+
+    docker-compose up --build airflow-init
+
+Then, start the containers in the background with:
 
     docker-compose up --build -d
 
