@@ -95,7 +95,7 @@ Prepare a Python virtual environment,
 
 Install Great Expectations and required dependencies with
 
-    pip install -r requirementst.txt
+    pip install -r requirements.txt
 
 And initialize the Airflow containers. The Dockerfile extends the Airflow image to
 install Python libraries within the containers as well.
