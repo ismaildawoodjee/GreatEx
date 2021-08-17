@@ -119,13 +119,13 @@ config_variables_file_path: uncommitted/config_variables.yml
 plugins_directory: plugins/
 
 stores:
-# Stores are configurable places to store things like Expectations, Validations
-# Data Docs, and more. These are for advanced users only - most users can simply
-# leave this section alone.
-#
-# Three stores are required: expectations, validations, and
-# evaluation_parameters, and must exist with a valid store entry. Additional
-# stores can be configured for uses such as data_docs, etc.
+  # Stores are configurable places to store things like Expectations, Validations
+  # Data Docs, and more. These are for advanced users only - most users can simply
+  # leave this section alone.
+  #
+  # Three stores are required: expectations, validations, and
+  # evaluation_parameters, and must exist with a valid store entry. Additional
+  # stores can be configured for uses such as data_docs, etc.
   expectations_store:
     class_name: ExpectationsStore
     store_backend:
@@ -137,6 +137,11 @@ stores:
     store_backend:
       class_name: TupleFilesystemStoreBackend
       base_directory: uncommitted/validations/
+  validations_postgres_store:
+    class_name: ValidationsStore
+    store_backend:
+      class_name: DatabaseStoreBackend
+      credentials: ${VALIDATION_STORE_CREDS}
 
   evaluation_parameter_store:
     # Evaluation Parameters enable dynamic expectations. Read more here:
@@ -151,7 +156,7 @@ stores:
       base_directory: checkpoints/
 
 expectations_store_name: expectations_store
-validations_store_name: validations_store
+validations_store_name: validations_postgres_store
 evaluation_parameter_store_name: evaluation_parameter_store
 checkpoint_store_name: checkpoint_store
 
