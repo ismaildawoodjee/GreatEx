@@ -14,8 +14,9 @@ pipeline. All the databases and Airflow components are designed to run within Do
 it's easy to set it up with a `docker-compose` file. The setup for this architecture is supposed to run on
 Windows OS, but a very similar setup can be done to run on Linux as well.
 
-I will be using Great Expectations `v0.13.25` and the Version 3 API, Docker `v20.10.7` (and Docker Desktop in Windows),
+I will be using Great Expectations `v0.13.28` and the Version 3 API, Docker `v20.10.7` (and Docker Desktop in Windows),
 `docker-compose` `v1.29.2`, Python `v3.8.10` for the containers (`v3.9.5` on local machine), and Windows OS (Windows 10).
+The setup was also tested on Ubuntu `v20.04` and can be run by following additional instructions in the [Setup](#setup) section.
 
 [**Google Sheet to fill out Great Expectations configuration**](https://docs.google.com/spreadsheets/d/1yO5cSmHFrE78R7kcUfP7fNzZcRpgG5eieApFwZ0f8oY/edit?usp=sharing)
 
@@ -132,8 +133,12 @@ On Linux OS, additional commands need to be run to provide permissions for read/
 
     echo -e "\nAIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0" >> .env
     mkdir ./logs ./plugins
-    chmod ug+rwx dags/* logs/* filesystem/* database-setup/* source-data/* dest-data/* great_expectations/*
+    chmod 777 dags/* logs/ filesystem/* database-setup/* source-data/* dest-data/* great_expectations/*
     docker-compose up --build airflow-init
+
+If the Airflow initialization was successful, there will be a return code of 0 shown below:
+
+![Return Code 0](assets/images/airflow_init_success_code.png)
 
 Then, start the containers in the background with:
 
@@ -154,7 +159,7 @@ If you are using VS Code, you can check the health of the containers with the Do
 
 Otherwise, type `docker ps -a` into the terminal to check their health status.
 Once the Airflow Worker and Webserver are in a healthy state, you can go to `localhost:8080` in
-the webbrowser to log into the Airflow UI and observe the data pipeline.
+the webbrowser to log into the Airflow UI and run the data pipeline.
 
 ## About the `docker-compose` File
 
