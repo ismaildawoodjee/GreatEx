@@ -155,8 +155,8 @@ def create_checkpoint(checkpoint_name):
 
     context.test_yaml_config(yaml_config=checkpoint_config, pretty_print=True)
     context.add_checkpoint(**yaml.load(checkpoint_config))
-    result = context.run_checkpoint(checkpoint_name)
-    print(f'Successful checkpoint validation: {result["success"]}\n')
+    # result = context.run_checkpoint(checkpoint_name)
+    # print(f'Successful checkpoint validation: {result["success"]}\n')
 
 
 connect_to_datasource()

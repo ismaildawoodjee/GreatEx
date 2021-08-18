@@ -264,11 +264,11 @@ Except for the very first step of creating a Data Context (the Great Expectation
 configuration for connecting to Datasources, creating Expectation Suites, creating Checkpoints and validating them, will be
 done using Python scripts, without any Jupyter Notebooks. I'll be using Great Expectations Version 3 API.
 
-1. The first step is to create a Data Context from the command line:
+1. We've already reinitialized the Data Context in the Setup section. But if you wish to start from scratch,
+   keep a copy of the `config_variables.yml` and `great_expectations.yml` files and delete the `great_expectations` folder.
+   Then, initialize the Data Context by running:
 
         great_expectations --v3-api init
-
-    This will create a `great_expectations` folder.
 
 2. The next step is to connect to Datasources. Here, we have 5 Datasources, three of them are tables in relational databases,
    one is a CSV file in the raw directory, and another is a Parquet file in the stage directory.
@@ -281,4 +281,11 @@ done using Python scripts, without any Jupyter Notebooks. I'll be using Great Ex
       - Same destination database but with schema `public`, where the final transformed data is located
 
     Each Datasource has its own Python script in the `dags/scripts/python/` folder where batches of data can be sampled,
-    Expectation Suites created, and Checkpoints can be configured.
+    Expectation Suites created, and Checkpoints can be configured. The `utils` file contains all the imports and variables
+    that are common across all Datasources.
+
+    The variables for connecting to Datasources are already in the Python scripts,
+    and they can be renamed/modified if needed. Running the `connect_to_datasource()` function should automatically
+    populate the `great_expectations.yml` file and add a new Datasource.
+
+3. After connecting to a Datasource and sampling a batch of data, we can create an Expectation Suite out of it.
