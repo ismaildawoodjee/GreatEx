@@ -289,3 +289,16 @@ done using Python scripts, without any Jupyter Notebooks. I'll be using Great Ex
     populate the `great_expectations.yml` file and add a new Datasource.
 
 3. After connecting to a Datasource and sampling a batch of data, we can create an Expectation Suite out of it.
+   I defined three example Expectations for each Datasource, but more can be added depending on the rigor of testing
+   needed for the data. Running the `create_expectation_suite` function with an Expectation Suite name creates a JSON
+   file with the same name in the `great_expectations/expectations` folder, where all the Expectations specified within
+   the function are stored.
+
+4. Once we have both a Datasource and an Expectation Suite, we can pair them together in files that are called Checkpoints.
+   The `checkpoint_config` string in the Python scripts does exactly this. Running the `create_checkpoint` function takes
+   this string and populates a YAML file with the specified Checkpoint name, which is localted in the `great_expectations/checkpoints`
+   folder. I've also added an extra `action` to send an email on validation failure.
+
+   ![For sending email on validation failure](assets/images/email_on_validation_failure.png)
+
+5. Validating
