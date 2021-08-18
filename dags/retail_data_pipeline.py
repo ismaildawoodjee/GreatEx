@@ -5,7 +5,6 @@ from airflow import DAG
 from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.dummy_operator import DummyOperator
-from airflow.operators.bash_operator import BashOperator
 
 from transformations import transform_raw_data, root_path, date, transform_stage_data
 from validation import validate_checkpoint
@@ -30,9 +29,6 @@ dag = DAG(
     max_active_runs=1,
 )
 
-# Generate Python checkpoint script and run it to validate,
-# if fails it generates link to Data Docs (send link and custom error message to Airflow logs)
-# Google Sheets for users to fill in and configure GE datasources, expectations, checkpoints, etc.
 validate_retail_source_data = PythonOperator(
     dag=dag,
     task_id="validate_retail_source_data",

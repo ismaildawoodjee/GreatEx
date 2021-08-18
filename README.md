@@ -281,12 +281,35 @@ done using Python scripts, without any Jupyter Notebooks. I'll be using Great Ex
       - Same destination database but with schema `public`, where the final transformed data is located
 
     Each Datasource has its own Python script in the `dags/scripts/python/` folder where batches of data can be sampled,
-    Expectation Suites created, and Checkpoints can be configured. The `utils` file contains all the imports and variables
-    that are common across all Datasources.
+    Expectation Suites created, and Checkpoints can be configured. The `utils.py` file contains the imports and variables
+    that are common across all Datasources. The following fields show an example configuration in the `utils.py` file, where
+    they should be stored as environment variables (and stored in the `config_variables.yml` file):
 
-    The variables for connecting to Datasources are already in the Python scripts,
+        VALIDATION_ACTION_NAME = "email_on_validation_failure"
+        NOTIFY_ON = "failure"  
+        SMTP_ADDRESS = smtp.gmail.com
+        SMTP_PORT = 587 
+        SENDER_LOGIN = sender-gmail@gmail.com
+        SENDER_PASSWORD = sender-gmail-password
+        RECEIVER_EMAILS = receiver-email1@gmail.com,receiver-email2@mail.com
+
+    The fields for connecting to Datasources are already in the Python scripts,
     and they can be renamed/modified if needed. Running the `connect_to_datasource()` function should automatically
-    populate the `great_expectations.yml` file and add a new Datasource.
+    populate the `great_expectations.yml` file and add a new Datasource. An example configuration for the destination
+    database fields are shown below:
+
+        DATASOURCE_NAME = "retail_dest"
+        EXPECTATION_SUITE_NAME = "retail_dest_suite"
+        CHECKPOINT_NAME = "retail_dest_checkpoint"
+        DATABASE_CONN = "postgresql+psycopg2://destdb1:destdb1@postgres-dest:5432/destdb"
+        INCLUDE_SCHEMA_NAME = True
+        SCHEMA_NAME = "public"
+        TABLE_NAME = "retail_profiling"
+        DATA_ASSET_NAME = "public.retail_profiling"
+
+    These fields are different depending on the Datasource that we are connecting to (CSV, database, etc.).
+    Again, sensitive credentials such as the database connection string should be stored as environment variables
+    or in the `config_variables.yml` file, which should not tracked by Git.
 
 3. After connecting to a Datasource and sampling a batch of data, we can create an Expectation Suite out of it.
    I defined three example Expectations for each Datasource, but more can be added depending on the rigor of testing
@@ -296,9 +319,24 @@ done using Python scripts, without any Jupyter Notebooks. I'll be using Great Ex
 
 4. Once we have both a Datasource and an Expectation Suite, we can pair them together in files that are called Checkpoints.
    The `checkpoint_config` string in the Python scripts does exactly this. Running the `create_checkpoint` function takes
-   this string and populates a YAML file with the specified Checkpoint name, which is localted in the `great_expectations/checkpoints`
-   folder. I've also added an extra `action` to send an email on validation failure.
+   this string and populates a YAML file with the specified Checkpoint name, which is located in the `great_expectations/checkpoints`
+   folder. I've also added an extra `action` to the `action_list` for each Checkpoint file to send an email on validation failure.
 
    ![For sending email on validation failure](assets/images/email_on_validation_failure.png)
 
-5. Validating
+   **Note:** Validating (running) the Checkpoint locally will keep a record at the local time whereas validating by
+   running the Airflow DAG will keep records that use the UTC timestamp. Hence, to prevent inconsistency between the
+   timestamps on the validation records shown on the Data Docs (which are also stored in the `postgres-store` database),
+   it is recommended **not** to run Checkpoints locally.
+
+5. The function for validating a Checkpoint is in the `dags/scripts/validation.py` file, where Bash commands are used
+   to run a couple of Great Expectations CLI commands. Instead of using a BashOperator, I used a PythonOperator so that
+   a custom error message can be displayed on the Airflow logs.
+
+   The `validate_checkpoint` function attempts to run a Checkpoint first. If it fails, it lists out the Data Docs and
+   sends the output to the Airflow log. An email is also sent to the `RECEIVER_EMAILS` specified in the Checkpoint YAML files.
+
+   In addition, the record of each validation is stored in the `postgres-store` database, which was configured by adding
+   the following lines into the `great_expectations.yml` file:
+
+   ![Configuring validations storage in Postgres database](assets/images/validations_store.png)

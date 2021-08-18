@@ -3,6 +3,10 @@ import subprocess
 from airflow.exceptions import AirflowException
 
 
+LOCAL_DIRECTORY = r"C:\Users\DELL\Desktop\Darmadia\GreatEx"
+DATA_DOCS_LOCATION = "great_expectations/uncommitted/data_docs/local_site/index.html"
+
+
 def validate_checkpoint(checkpoint_name):
     """Python function to validate checkpoint. Writes output to Airflow logs and
     also generates a list of Data Docs when the validation fails.
@@ -15,10 +19,6 @@ def validate_checkpoint(checkpoint_name):
         either make the Airflow Task incorrectly succeed, or completely fail
         without being up for retry.
     """
-    LOCAL_DIRECTORY = r"C:\Users\DELL\Desktop\Darmadia\GreatEx"
-    DATA_DOCS_LOCATION = (
-        "great_expectations/uncommitted/data_docs/local_site/index.html"
-    )
 
     validation_process = subprocess.Popen(
         ["great_expectations", "--v3-api", "checkpoint", "run", checkpoint_name],

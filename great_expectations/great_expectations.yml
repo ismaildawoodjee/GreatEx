@@ -132,17 +132,6 @@ stores:
       class_name: TupleFilesystemStoreBackend
       base_directory: expectations/
 
-  validations_store:
-    class_name: ValidationsStore
-    store_backend:
-      class_name: TupleFilesystemStoreBackend
-      base_directory: uncommitted/validations/
-  validations_postgres_store:
-    class_name: ValidationsStore
-    store_backend:
-      class_name: DatabaseStoreBackend
-      credentials: ${VALIDATION_STORE_CREDS}
-
   evaluation_parameter_store:
     # Evaluation Parameters enable dynamic expectations. Read more here:
     # https://docs.greatexpectations.io/en/latest/reference/core_concepts/evaluation_parameters.html
@@ -154,6 +143,17 @@ stores:
       class_name: TupleFilesystemStoreBackend
       suppress_store_backend_id: true
       base_directory: checkpoints/
+
+  validations_store:
+    class_name: ValidationsStore
+    store_backend:
+      class_name: TupleFilesystemStoreBackend
+      base_directory: uncommitted/validations/
+  validations_postgres_store:
+    class_name: ValidationsStore
+    store_backend:
+      class_name: DatabaseStoreBackend
+      credentials: ${VALIDATION_STORE_CREDS}
 
 expectations_store_name: expectations_store
 validations_store_name: validations_postgres_store
