@@ -11,8 +11,8 @@
 
 This project looks at how Great Expectations can be used to ensure data quality within an Airflow
 pipeline. All the databases and Airflow components are designed to run within Docker containers, so that
-it's easy to set it up with a `docker-compose` file. The setup for this architecture is supposed to run on
-Windows OS, but a very similar setup can be done to run on Linux as well.
+it's easy to set it up with a `docker-compose` file. The setup for this architecture contains instructions
+for running on both Windows and Linux OS.
 
 I will be using Great Expectations `v0.13.28` and the Version 3 API, Docker `v20.10.7` (and Docker Desktop in Windows),
 `docker-compose` `v1.29.2`, Python `v3.8.10` for the containers (`v3.9.5` on local machine), and Windows OS (Windows 10).
@@ -30,13 +30,17 @@ The setup was also tested on Ubuntu `v20.04` and can be run by following additio
     ├── dags
     │   ├── scripts
     │   │   ├── python
-    │   │   │   ├── checkpoints.py
-    │   │   │   ├── datasources.py
-    │   │   │   └── expectations.py   
+    │   │   │   ├── retail_dest.py
+    │   │   │   ├── retail_load.py
+    │   │   │   ├── retail_source.py
+    │   │   │   ├── retail_transform.py
+    │   │   │   ├── retail_warehouse.py
+    │   │   │   └── utils.py   
     │   │   └── sql
     │   │       ├── extract_load_retail_source.sql
     │   │       ├── load_retail_stage.sql
-    │   │       └── transform_load_retail_warehouse.sql
+    │   │       ├── transform_load_retail_warehouse.sql
+    │   │       └── validations_store.sql
     │   ├── retail_data_pipeline.py
     │   ├── transformations.py
     │   └── validations.py
@@ -44,7 +48,6 @@ The setup was also tested on Ubuntu `v20.04` and can be run by following additio
     │   ├── destinationdb.sql
     │   └── sourcedb.sql
     ├── debugging
-    │   ├── debug.log
     │   └── logging.ini
     ├── dest-data
     │   └── dummy.txt
@@ -64,9 +67,11 @@ The setup was also tested on Ubuntu `v20.04` and can be run by following additio
     │   │   └── retail_warehouse_checkpoint.yml
     │   ├── expectations
     │   │   ├── .ge_store_backend_id
-    │   │   ├── example_suite.json
     │   │   ├── retail_dest_suite.json
+    │   │   ├── retail_load_suite.json
     │   │   ├── retail_source_suite.json
+    │   │   ├── retail_transform_suite.json
+    │   │   ├── retail_warehouse_suite.json
     │   │   └── test_suite.json
     │   ├── uncommitted
     │   │   └── config_variables.yml
@@ -76,12 +81,14 @@ The setup was also tested on Ubuntu `v20.04` and can be run by following additio
     │   ├── retail_profiling.csv
     │   └── retail_validating.csv
     ├── .dockerignore
+    ├── .env-example
     ├── .gitattributes
     ├── .gitignore
+    ├── airflow_conn.ps1
+    ├── airflow_conn.sh
+    ├── docker-compose.yml
     ├── Dockerfile
     ├── README.md
-    ├── airflow_conn.ps1
-    ├── docker-compose.yml
     └── requirements.txt
 
 ## Setup
@@ -171,19 +178,30 @@ for running Airflow in Docker. I modified it in several different ways:
 
 - An additional environment variable `AIRFLOW_CONN_POSTGRES_DEFAULT` for the Airflow meta database, which I renamed to `postgres-airflow`.
 
+- Specified an environment file `.env` for the `env_file` key.
+
 - I wrote a Dockerfile to extend the image (according to [the official docs](https://airflow.apache.org/docs/docker-stack/build.html#extending-the-image))
-  so that the Great Expectations library and other packages will be installed inside the containers.
+  so that the Great Expectations library and other packages will be installed inside the containers. This means I use the `build`
+  key, with `build: .` to build on the extended image specified in the Dockerfile instead of using the `image` key.
 
-- Added two additional PostgresDB containers `postgres-source` and `postgres-dest` to represent the retail data source and the destination data warehouse.
+- Added three additional PostgresDB containers `postgres-source`, `postgres-dest` and `postgres-store` to represent the
+  retail data source, the destination data warehouse, and the database where the data validation results are stored.
 
-- For Airflow to properly orchestrate these containers, their volumes and port mappings were also specified, e.g. "5433:5432" for the source database so that it
-  won't conflict with Airflow's meta database mapping "5432:5432".
+- For Airflow to properly orchestrate these containers, their volumes and port mappings were also specified, e.g. `5433:5432` for the source database so that it
+  won't conflict with Airflow's meta database mapping `5432:5432`. The hostnames and ports are meant for Airflow containers,
+  but if you want to test the connections locally, use `localhost:543x` with the appropriate ports instead.
+
+  A common (but terrible) error message that pops up when connections are not configured correctly looks like the following, e.g.
+  where it just outputs the Datasource name instead of providing an actual error message:
+
+  ![Error when connecting to or validating retail_source Datasource](assets/images/misconfiguring_hostname_portnumber.png)
 
 - The `great_expectations` folder, `filesystem` folder, `database-setup`, `source-data` and `dest-data` folders also need to be
   mounted as volumes to the appropriate containers so that Airflow can access them.
 
 - The service names for the containers are also their hostnames, so we should keep that in mind
-  (else Docker will keep searching for the wrong services and won't find them). Below, I changed the service name from the default `postgres` to `postgres-airflow`,
+  (else Docker will keep searching for the wrong services and won't find them). Below, I changed the
+  service name from the default `postgres` to `postgres-airflow`,
   so the hostname in the connection strings must also be changed:
 
     ![service_name == hostname](assets/images/service_name_hostname.png)
@@ -261,3 +279,6 @@ done using Python scripts, without any Jupyter Notebooks. I'll be using Great Ex
       - Postgres destination database `destdb` with schema `stage` (`postgres-dest` container), the penultimate location where transformed data is
         staged before moving it to the public schema.
       - Same destination database but with schema `public`, where the final transformed data is located
+
+    Each Datasource has its own Python script in the `dags/scripts/python/` folder where batches of data can be sampled,
+    Expectation Suites created, and Checkpoints can be configured.

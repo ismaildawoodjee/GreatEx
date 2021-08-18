@@ -16,6 +16,8 @@
 # https://docs.greatexpectations.io/en/latest/guides/how_to_guides/configuring_data_contexts/how_to_use_a_yaml_file_or_environment_variables_to_populate_credentials.html
 
 instance_id: f413089e-4924-4e60-91b9-f74af664c2c0
+# These connections are meant for Airflow containers. 
+# If you want to test connections locally, use `localhost:543x` with the appropriate ports instead.
 SOURCEDB_CONN: "postgresql+psycopg2://sourcedb1:sourcedb1@postgres-source:5432/sourcedb"
 DESTDB_CONN: "postgresql+psycopg2://destdb1:destdb1@postgres-dest:5432/destdb"
 STOREDB_CONN: "postgresql+psycopg2://storedb1:storedb1@postgres-store:5432/storedb"
