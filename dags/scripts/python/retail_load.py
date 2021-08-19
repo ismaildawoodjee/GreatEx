@@ -47,7 +47,7 @@ batch_request = BatchRequest(
     },
 )
 
-checkpoint_config = f"""
+checkpoint_config = f"""\
 name: {CHECKPOINT_NAME}
 config_version: 1
 class_name: Checkpoint
@@ -70,22 +70,8 @@ action_list:
     action:
       class_name: UpdateDataDocsAction
       site_names: []
-  - name: {VALIDATION_ACTION_NAME}
-    action:
-      class_name: EmailAction
-      notify_on: {NOTIFY_ON} 
-      notify_with:
-      use_tls: True
-      use_ssl: False
-      renderer:
-        module_name: great_expectations.render.renderer.email_renderer
-        class_name: EmailRenderer
-      smtp_address: {SMTP_ADDRESS}
-      smtp_port: {SMTP_PORT}
-      sender_login: {SENDER_LOGIN}
-      sender_password: {SENDER_PASSWORD}
-      receiver_emails: {RECEIVER_EMAILS}
-"""
+{VALIDATION_ACTION}
+"""  # the validation action defined in utils.py
 
 
 def connect_to_datasource():

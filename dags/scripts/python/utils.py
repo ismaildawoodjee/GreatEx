@@ -25,8 +25,28 @@ Datasource Python scripts.
 """
 VALIDATION_ACTION_NAME = "email_on_validation_failure"
 NOTIFY_ON = "failure"  # possible values: "all", "failure", "success"
+USE_TLS = True
+USE_SSL = False
 SMTP_ADDRESS = os.environ.get("SMTP_ADDRESS")
-SMTP_PORT = os.environ.get("SMTP_PORT")
+SMTP_PORT = os.environ.get("SMTP_PORT")  # use port 587 for TLS
 SENDER_LOGIN = os.environ.get("SENDER_LOGIN")
 SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD")
 RECEIVER_EMAILS = os.environ.get("RECEIVER_EMAILS")
+
+VALIDATION_ACTION = f"""\
+  - name: {VALIDATION_ACTION_NAME}
+    action:
+      class_name: EmailAction  # Turn the option "Allow less secure apps" ON for Gmail
+      notify_on: {NOTIFY_ON} 
+      notify_with:
+      use_tls: {USE_TLS}
+      use_ssl: {USE_SSL}
+      renderer:
+        module_name: great_expectations.render.renderer.email_renderer
+        class_name: EmailRenderer
+      smtp_address: {SMTP_ADDRESS}
+      smtp_port: {SMTP_PORT}
+      sender_login: {SENDER_LOGIN}
+      sender_password: {SENDER_PASSWORD}
+      receiver_emails: {RECEIVER_EMAILS}
+"""
