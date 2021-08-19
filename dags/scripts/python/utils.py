@@ -36,7 +36,7 @@ RECEIVER_EMAILS = os.environ.get("RECEIVER_EMAILS")
 VALIDATION_ACTION = f"""\
   - name: {VALIDATION_ACTION_NAME}
     action:
-      class_name: EmailAction  # Turn the option "Allow less secure apps" ON for Gmail
+      class_name: EmailAction
       notify_on: {NOTIFY_ON} 
       notify_with:
       use_tls: {USE_TLS}

@@ -292,9 +292,11 @@ done using Python scripts, without any Jupyter Notebooks. I'll be using Great Ex
     they should be stored as environment variables (and stored in the `config_variables.yml` file):
 
         VALIDATION_ACTION_NAME = "email_on_validation_failure"
-        NOTIFY_ON = "failure"  
+        NOTIFY_ON = "failure"
+        USE_TLS = True
+        USE_SSL = False
         SMTP_ADDRESS = smtp.gmail.com
-        SMTP_PORT = 587 
+        SMTP_PORT = 587
         SENDER_LOGIN = sender-gmail@gmail.com
         SENDER_PASSWORD = sender-gmail-password
         RECEIVER_EMAILS = receiver-email1@gmail.com,receiver-email2@mail.com
