@@ -4,3 +4,4 @@ psycopg2-binary
 pyarrow
 fastparquet
 black
+python-dotenv

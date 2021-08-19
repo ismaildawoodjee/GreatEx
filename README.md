@@ -6,6 +6,9 @@
   - [About the `docker-compose` File](#about-the-docker-compose-file)
   - [Retail Pipeline DAG](#retail-pipeline-dag)
   - [Configuring Great Expectations](#configuring-great-expectations)
+  - [Running the DAG](#running-the-dag)
+    - [Airflow Log Output](#airflow-log-output)
+    - [Email on Validation Failure](#email-on-validation-failure)
 
 ## Introduction
 
@@ -260,6 +263,9 @@ Currently, the Airflow DAG looks like the following:
 
 ## Configuring Great Expectations
 
+**Note:** The configuration in this section can be skipped since I've already done almost all of the steps
+(except the email credentials in the [Setup](#setup) section).
+
 Except for the very first step of creating a Data Context (the Great Expectations folder and associated files), all of the
 configuration for connecting to Datasources, creating Expectation Suites, creating Checkpoints and validating them, will be
 done using Python scripts, without any Jupyter Notebooks. I'll be using Great Expectations Version 3 API.
@@ -309,7 +315,8 @@ done using Python scripts, without any Jupyter Notebooks. I'll be using Great Ex
 
     These fields are different depending on the Datasource that we are connecting to (CSV, database, etc.).
     Again, sensitive credentials such as the database connection string should be stored as environment variables
-    or in the `config_variables.yml` file, which should not tracked by Git.
+    or in the `config_variables.yml` file, which should not tracked by Git. Note that the database
+    connection strings should be changed to `localhost:543x` if you want to test connections locally.
 
 3. After connecting to a Datasource and sampling a batch of data, we can create an Expectation Suite out of it.
    I defined three example Expectations for each Datasource, but more can be added depending on the rigor of testing
@@ -340,3 +347,28 @@ done using Python scripts, without any Jupyter Notebooks. I'll be using Great Ex
    the following lines into the `great_expectations.yml` file:
 
    ![Configuring validations storage in Postgres database](assets/images/validations_store.png)
+
+## Running the DAG
+
+The default settings and configuration I have provided in this repo should allow the DAG to run successfully without
+failing. To test what happens when a step fails, modify some of the Expectations in the `great_expectations/expectations`
+folder so that the data doesn't meet all of those Expectations.
+
+### Airflow Log Output
+
+Upon unsuccessful validation when running the DAG, the Airflow error log will contain a link to the Data Docs, where we can
+see what went wrong with the validation, and why some of the Expectations failed.
+
+![Link to Data Docs in Airflow logs](assets/images/airflow_error_log.png)
+
+Since the pipeline is running on a container, the link is prefixed with `/opt/airflow`, so I added an additional log
+message to include the link in the local machine as well. The `great_expectations` folder is mounted onto the container,
+so all the files that are accessible on localhost are also available to the container, and all files created by operations
+running on the container are also available on localhost.
+
+### Email on Validation Failure
+
+Users can be notified by email when the DAG fails to run due to data validation error. The credentials are configured in the
+`config_variables.yml` file and the `.env` file, and also specified as an `action` in each of the Checkpoint YAML files.
+
+![A typical failure email](assets/images/email.png)
