@@ -24,9 +24,9 @@ STOREDB_CONN: "postgresql+psycopg2://storedb1:storedb1@postgres-store:5432/store
 
 SMTP_ADDRESS: smtp.gmail.com
 SMTP_PORT: 587
-SENDER_LOGIN: sender-gmail@gmail.com
-SENDER_PASSWORD: sender-gmail-password
-RECEIVER_EMAILS: receiver-email1@gmail.com,receiver-email2@mail.com
+SENDER_LOGIN: ${SENDER_LOGIN}
+SENDER_PASSWORD: ${SENDER_PASSWORD}
+RECEIVER_EMAILS: ${RECEIVER_EMAILS}
 
 VALIDATION_STORE_CREDS:
     drivername: postgresql+psycopg2
