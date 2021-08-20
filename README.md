@@ -15,7 +15,9 @@
 This project looks at how Great Expectations can be used to ensure data quality within an Airflow
 pipeline. All the databases and Airflow components are designed to run within Docker containers, so that
 it's easy to set it up with a `docker-compose` file. The setup for this architecture contains instructions
-for running on both Windows and Linux OS.
+for running on both Windows and Linux OS. The flowchart below shows the high-level architecture of this data pipeline:
+
+![Data pipeline](assets/images/pipeline.png)
 
 I will be using Great Expectations `v0.13.28` and the Version 3 API, Docker `v20.10.7` (and Docker Desktop in Windows),
 `docker-compose` `v1.29.2`, Python `v3.8.10` for the containers (`v3.9.5` on local machine), and Windows OS (Windows 10).
