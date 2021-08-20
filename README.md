@@ -19,7 +19,7 @@ for running on both Windows and Linux OS. The flowchart below shows the high-lev
 
 ![Data pipeline](assets/images/pipeline.png)
 
-I will be using Great Expectations `v0.13.28` and the Version 3 API, Docker `v20.10.7` (and Docker Desktop in Windows),
+I will be using Great Expectations `v0.13.25` and the Version 3 API, Docker `v20.10.7` (and Docker Desktop in Windows),
 `docker-compose` `v1.29.2`, Python `v3.8.10` for the containers (`v3.9.5` on local machine), and Windows OS (Windows 10).
 The setup was also tested on Ubuntu `v20.04` and can be run by following additional instructions in the [Setup](#setup) section.
 
