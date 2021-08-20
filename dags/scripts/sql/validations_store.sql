@@ -1,4 +1,7 @@
 -- Query to see the overall result of validations stored in Postgres
+-- Logging table: When it starts and when it ends, how long it runs, and outcome?
+-- Postgres functionality to query JSON data, flatten some parts of the `value` column
+-- Stored procedures / triggers? To create a new table from original table with added features
 SELECT
   *,
   (

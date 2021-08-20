@@ -173,6 +173,11 @@ Otherwise, type `docker ps -a` into the terminal to check their health status.
 Once the Airflow Worker and Webserver are in a healthy state, you can go to `localhost:8080` in
 the webbrowser to log into the Airflow UI and run the data pipeline.
 
+After you are finished with exploring the pipeline, tear down the infrastructure
+(stopping containers, removing images and volumes):
+
+    docker-compose down --rmi --volumes all
+
 ## About the `docker-compose` File
 
 The original `docker-compose` file for setting up Airflow containers was obtained from
