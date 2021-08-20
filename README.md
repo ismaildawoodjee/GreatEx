@@ -288,6 +288,9 @@ done using Python scripts, without any Jupyter Notebooks. I'll be using Great Ex
         staged before moving it to the public schema.
       - Same destination database but with schema `public`, where the final transformed data is located
 
+    **Note:** Before running any of the Python scripts, run the Airflow DAG at least once, so that all the data files and tables are moved
+    to their respective locations. Only then will you be able to run the scripts and test the Datasource connections locally.
+
     Each Datasource has its own Python script in the `dags/scripts/python/` folder where batches of data can be sampled,
     Expectation Suites created, and Checkpoints can be configured. The `utils.py` file contains the imports and variables
     that are common across all Datasources. The following fields show an example configuration in the `utils.py` file, where
