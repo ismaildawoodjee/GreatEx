@@ -187,7 +187,7 @@ and increase the memory there.
 After you are finished with exploring the pipeline, tear down the infrastructure
 (stopping containers, removing images and volumes):
 
-    docker-compose down --rmi --volumes all
+    docker-compose down --volumes --rmi all
 
 ## About the `docker-compose` File
 
