@@ -98,9 +98,21 @@ The setup was also tested on Ubuntu `v20.04` and can be run by following additio
 
 ## Setup
 
-Clone this repository,  
+To clone the source data from this repository, `git-lfs` or Git Large File Storage must be installed first.
+On Windows OS, follow the instructions from this [website](https://git-lfs.github.com/). On Linux, run the following
+command to install `git-lfs` on your system:
+
+    sudo apt install git-lfs
+
+Once that is done, you can proceed with cloning this repo:
 
     git clone https://github.com/ismaildawoodjee/GreatEx; cd GreatEx
+
+Ensure that the CSV files and their contents are present in the `source-data` folder, either using
+`Get-Content .\source-data\retail_profiling.csv | select -First 10` with Powershell
+or `head -n 10 source-data/retail_profiling.csv` with Bash, or just opening it as a file:
+
+![CSV file contents](assets/images/source_data.png)
 
 Prepare a Python virtual environment (assuming Windows OS),
 
