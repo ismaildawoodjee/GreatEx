@@ -136,23 +136,27 @@ of the Sender email should be turned on.
 
 Next, ensure that Docker is running before initializing the Airflow containers.
 The Dockerfile extends the Airflow image to install Python libraries within the
-containers as well. Initialize Airflow containers with:
+containers as well.
 
+On Windows OS and using Powershell, run the first command to add the path to local directory into the `.env` file
+and run the second command to initialize Airflow containers:
+
+    Add-Content -Path .\.env -Value "`nLOCAL_DIRECTORY=$pwd"
     docker-compose up --build airflow-init
 
 On Linux OS, additional commands need to be run to provide permissions for read/write
 (prepending `sudo` and providing permissions where needed):
 
-    echo -e "\nAIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0" >> .env
+    echo -e "\nAIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0\nLOCAL_DIRECTORY=$(pwd)" >> .env
     mkdir ./logs ./plugins
-    chmod 777 dags/* logs/ filesystem/* database-setup/* source-data/* dest-data/* great_expectations/*
-    docker-compose up --build airflow-init
+    sudo chmod 777 dags/* logs/ filesystem/* database-setup/* source-data/* dest-data/* great_expectations/*
+    sudo docker-compose up --build airflow-init
 
 If the Airflow initialization was successful, there will be a return code of 0 shown below:
 
 ![Return Code 0](assets/images/airflow_init_success_code.png)
 
-Then, start the containers in the background with:
+Then, start the containers in the background (prepending `sudo` if needed):
 
     docker-compose up --build -d
 
@@ -161,7 +165,7 @@ a convenience script with `airflow_conn.ps1`. Run this Powershell script with:
 
     .\airflow_conn.ps1
 
-Or if using a Linux machine, run the Bash script below:
+Or if using a Linux machine, run the Bash script below (this will ask you for your `sudo` password):
 
     ./airflow_conn.sh
 
@@ -171,7 +175,14 @@ If you are using VS Code, you can check the health of the containers with the Do
 
 Otherwise, type `docker ps -a` into the terminal to check their health status.
 Once the Airflow Worker and Webserver are in a healthy state, you can go to `localhost:8080` in
-the webbrowser to log into the Airflow UI and run the data pipeline.
+the webbrowser to log into the Airflow UI (using default username: "airflow" and password: "airflow")
+and run the data pipeline.
+
+The `greatex_airflow-init_1` container is expected to exit after initializing the Airflow containers,
+but the rest of the containers should be healthy and functioning after several minutes. If they become unhealthy
+or keep exiting, more memory needs to be allocated to the Docker engine, which can be done via the [.wslconfig](https://docs.microsoft.com/en-us/windows/wsl/wsl-config#configure-global-options-with-wslconfig)
+file in Windows. If you are using the Docker Desktop application in Linux or MacOS, you can got to Settings -> Resources
+and increase the memory there.
 
 After you are finished with exploring the pipeline, tear down the infrastructure
 (stopping containers, removing images and volumes):

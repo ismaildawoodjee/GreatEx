@@ -1,9 +1,11 @@
+import os
 import logging
 import subprocess
 from airflow.exceptions import AirflowException
+from dotenv import load_dotenv, find_dotenv
 
-
-LOCAL_DIRECTORY = r"C:\Users\DELL\Desktop\Darmadia\GreatEx"
+load_dotenv(find_dotenv())
+LOCAL_DIRECTORY = os.environ.get("LOCAL_DIRECTORY")
 DATA_DOCS_LOCATION = "great_expectations/uncommitted/data_docs/local_site/index.html"
 
 
@@ -40,7 +42,7 @@ def validate_checkpoint(checkpoint_name):
         )
         docs_stdout = docs_process.communicate()[0]
         logging.info(docs_stdout)
-        logging.info(f"file:///{LOCAL_DIRECTORY}/{DATA_DOCS_LOCATION}")
+        logging.info(f"file://{LOCAL_DIRECTORY}/{DATA_DOCS_LOCATION}")
 
         raise AirflowException(
             "Checkpoint validation failed. Inspect the Data Docs for more information."
@@ -48,7 +50,7 @@ def validate_checkpoint(checkpoint_name):
 
     else:
         logging.info(validation_stdout)
-        logging.info(f"file:///{LOCAL_DIRECTORY}/{DATA_DOCS_LOCATION}")
+        logging.info(f"file://{LOCAL_DIRECTORY}/{DATA_DOCS_LOCATION}")
 
 
 # validate_checkpoint(checkpoint_name="retail_source_checkpoint")
