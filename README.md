@@ -124,7 +124,7 @@ If on a Linux OS, run the following:
 
 Install Great Expectations and required dependencies with
 
-    pip install -r requirements.txt
+    pip install -U wheel setuptools; pip install -r requirements.txt
 
 Currently, the `great_expectations` folder in this repo is partially initialized.
 Reinitialize it by running:
