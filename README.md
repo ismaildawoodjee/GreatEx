@@ -186,7 +186,7 @@ If you are using VS Code, you can check the health of the containers with the Do
 ![Container health from Docker extension](assets/images/container_health.png)
 
 Otherwise, type `docker ps -a` into the terminal to check their health status.
-Once the Airflow Worker and Webserver are in a healthy state, you can go to `localhost:8080` in
+Once the Airflow Scheduler and Webserver are in a healthy state, you can go to `localhost:8080` in
 the webbrowser to log into the Airflow UI (using default username: "airflow" and password: "airflow")
 and run the data pipeline.
 
@@ -207,7 +207,8 @@ The original `docker-compose` file for setting up Airflow containers was obtaine
 [Apache Airflow instructions](https://airflow.apache.org/docs/apache-airflow/stable/start/docker.html)
 for running Airflow in Docker. I modified it in several different ways:
 
-- Set `AIRFLOW__CORE__LOAD_EXAMPLES` to `false` to declutter the Airflow UI.
+- Set `AIRFLOW__CORE__LOAD_EXAMPLES` to `false` to declutter the Airflow UI and `DAGS_ARE_PAUSED_AT_CREATION` to `false`
+  to unpause DAGs automatically.
 
 - An additional environment variable `AIRFLOW_CONN_POSTGRES_DEFAULT` for the Airflow meta database, which I renamed to `postgres-airflow`.
 
@@ -216,6 +217,10 @@ for running Airflow in Docker. I modified it in several different ways:
 - I wrote a Dockerfile to extend the image (according to [the official docs](https://airflow.apache.org/docs/docker-stack/build.html#extending-the-image))
   so that the Great Expectations library and other packages will be installed inside the containers. This means I use the `build`
   key, with `build: .` to build on the extended image specified in the Dockerfile instead of using the `image` key.
+
+- I decided to use LocalExecutor instead of CeleryExecutor to reduce the number of containers by 3
+  (removing `airflow-worker`, `flower` and `redis`) and thus reduce memory usage as well. Celery would be great for
+  horizontal scalability with multiple workers, but in this case, the pipeline can easily be run on one server using the LocalExecutor.
 
 - Added three additional PostgresDB containers `postgres-source`, `postgres-dest` and `postgres-store` to represent the
   retail data source, the destination data warehouse, and the database where the data validation results are stored.
