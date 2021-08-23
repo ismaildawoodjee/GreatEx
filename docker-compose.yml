@@ -251,7 +251,9 @@ services:
         max-file: "3"
     ports:
       - "5435:5432"
-    volumes: []
+    volumes:
+      - ./great_expectations:/great_expectations
+      - ./database-setup/storedb.sql:/docker-entrypoint-initdb.d/storedb.sql
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "storedb1"]
       interval: 5s
