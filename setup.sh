@@ -1,21 +1,29 @@
 #!/bin/bash
+# Author: Ismail Dawoodjee
+# Date: 24-Aug-2021
+# Purpose: To set up containers to run the Great Expectations
+# data pipeline on Airflow. Run this script using `source setup.sh`. 
 
 # Sends outputs and errors into both STDOUT and log file
 LOG_LOCATION="./debugging"
 exec > >(tee -a $LOG_LOCATION/setup.log)
 exec 2>&1
 
+START_TIME=$(date +"%s")
+DATE_TIME=$(date +"%x %r %Z")
+echo -e "$(tput setaf 2)INFO: Started setup at $DATE_TIME\n$(tput sgr 0)"
+
 # Ensure that Docker is running
 if [ "$(systemctl is-active docker)" != "active" ]; then
-    echo 'ERROR: Docker is not running.' \
-        'Start Docker with "sudo service docker start".'
+    echo "$(tput setaf 1)ERROR: Docker is not running." \
+        "Start Docker with 'sudo service docker start'.$(tput sgr 0)"
     exit 1
 fi
 
 PROJECT_NAME="greatex"
 
 function prepare_python_environment () {
-    echo -e "INFO: Creating virtual environment and installing dependencies \n"
+    echo -e "$(tput setaf 3)INFO: Creating virtual environment and installing dependencies...\n$(tput sgr 0)"
     
     python3 -m venv .venv
     source .venv/bin/activate
@@ -24,7 +32,7 @@ function prepare_python_environment () {
 }
 
 function reinitialize_great_expectations () {
-    echo -e "INFO: Reinitializing Great Expectations. Press 'Y' \n"
+    echo -e "$(tput setaf 3)INFO: Reinitializing Great Expectations. Press 'Y' when prompted.\n$(tput sgr 0)"
 
     great_expectations --v3-api init
     echo -e "*\nnotebooks\nplugins\n!uncommitted/config_variables.yml" \
@@ -32,9 +40,9 @@ function reinitialize_great_expectations () {
 }
 
 function setup_environment_variables () {
-    echo -e "INFO: Setting up environment variables. Enter comma-separated" \
-        "Receiver email(s), and Sender email and password."
-    echo -e "Ensure that 'Less Secure Apps' is ON if sending alerts via Gmail.\n"
+    echo -e "$(tput setaf 3)INFO: Setting up environment variables. Enter comma-separated" \
+        "Receiver email(s), and Sender Gmail and password.$(tput sgr 0)"
+    echo -e "$(tput setaf 3)Ensure that 'Less Secure Apps' is ON if sending alerts via Gmail.\n$(tput sgr 0)"
     
     echo -e "SOURCEDB_CONN = postgresql+psycopg2://sourcedb1:sourcedb1@postgres-source:5432/sourcedb
 DESTDB_CONN = postgresql+psycopg2://destdb1:destdb1@postgres-dest:5432/destdb
@@ -52,23 +60,27 @@ RECEIVER_EMAILS = $RECEIVER_EMAILS" >> .env
 }
 
 function setup_airflow_containers () {
-    echo -e "\nINFO: Setting up local Airflow infrastructure \n"
+    echo -e "$(tput setaf 3)\nINFO: Setting up local Airflow infrastructure.\n$(tput sgr 0)"
 
     echo -e "\nAIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0\nLOCAL_DIRECTORY=$(pwd)" >> .env
     mkdir ./logs ./plugins
     sudo chmod 777 dags/* logs/ plugins/ filesystem/* database-setup/* \
         source-data/* dest-data/* great_expectations/*
 
-    echo -e "INFO: Initializing Airflow containers and starting them in detached mode \n"
+    echo -e "$(tput setaf 3)INFO: Initializing Airflow containers...\n$(tput sgr 0)"
     until sudo docker-compose up --build airflow-init; do
         sleep 30  # retry if containers are still in an unhealthy state
     done
+
+    echo -e "$(tput setaf 3)INFO: Starting containers in detached mode...\n$(tput sgr 0)"
     sudo docker-compose up --build -d
 
-    echo -e "INFO: Waiting 2 minutes to let Airflow containers reach a healthy state \n"
-    sleep 120
+    echo -e "$(tput setaf 3)\nINFO: Waiting 2 minutes to let Airflow containers reach a healthy state.\n$(tput sgr 0)"
+    sleep 60
+    echo -e "$(tput setaf 3)INFO: One minute left...\n"
+    sleep 60
 
-    echo -e "INFO: Adding Postgres database connections to Airflow \n"
+    echo -e "$(tput setaf 3)INFO: Adding Postgres database connections to Airflow...\n$(tput sgr 0)"
     sudo docker exec -d "$PROJECT_NAME"_airflow-webserver_1 \
         airflow connections add "postgres_source" \
         --conn-type "postgres" \
@@ -86,9 +98,16 @@ function setup_airflow_containers () {
         --conn-host "postgres-dest" \
         --conn-port 5432 \
         --conn-schema "destdb"
+
+    echo -e "$(tput setaf 3)INFO: Opening Airflow UI in web browser...\n$(tput sgr 0)"
+    xdg-open 'http://localhost:8080'
 }
 
-# prepare_python_environment
-# reinitialize_great_expectations
-# setup_environment_variables
-# setup_airflow_containers
+prepare_python_environment
+reinitialize_great_expectations
+setup_environment_variables
+setup_airflow_containers
+
+END_TIME=$(date +"%s")
+DURATION=$((END_TIME - START_TIME))
+echo "$(tput setaf 2)INFO: Completed setup within $DURATION seconds.$(tput sgr 0)"
