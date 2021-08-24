@@ -98,9 +98,6 @@ function setup_airflow_containers () {
         --conn-host "postgres-dest" \
         --conn-port 5432 \
         --conn-schema "destdb"
-
-    echo -e "$(tput setaf 3)INFO: Opening Airflow UI in web browser...\n$(tput sgr 0)"
-    xdg-open 'http://localhost:8080'
 }
 
 prepare_python_environment
