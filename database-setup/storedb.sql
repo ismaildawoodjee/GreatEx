@@ -1,3 +1,6 @@
+-- This is the setup script for the postgres-store database.
+-- The trigger cannot be defined without an existing table, so I had to 
+-- preemptively create the systems.ge_validations_store table even before any validations are run
 CREATE SCHEMA IF NOT EXISTS systems;
 CREATE SCHEMA IF NOT EXISTS logging;
 
@@ -15,8 +18,10 @@ CREATE TABLE systems.ge_validations_store (
 CREATE TABLE logging.great_expectations (
   expectation_suite_name TEXT,
   run_name TEXT,
-  run_time TIMESTAMP,
   batch_identifier TEXT,
+  run_time TIMESTAMP,
+  end_time TIMESTAMP,
+  -- duration NUMERIC,
   value JSONB
 );
 
@@ -29,8 +34,10 @@ BEGIN
     (
       NEW.expectation_suite_name,
       NEW.run_name,
-      NEW.run_time :: TIMESTAMP AT TIME ZONE 'UTC',
       NEW.batch_identifier,
+      NEW.run_time :: TIMESTAMP AT TIME ZONE 'UTC',
+      CURRENT_TIMESTAMP AT TIME ZONE 'UTC',
+      -- (duration - NEW.run_time) NUMERIC,
       NEW.value :: JSONB
     );
     RETURN NULL;

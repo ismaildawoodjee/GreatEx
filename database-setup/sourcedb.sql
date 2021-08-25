@@ -1,3 +1,4 @@
+-- This is the setup script for the postgres-source database.
 CREATE SCHEMA IF NOT EXISTS ecommerce;
 
 CREATE TABLE ecommerce.retail_profiling (
