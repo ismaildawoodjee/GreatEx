@@ -1,7 +1,9 @@
 -- Unfortunately Postgres cannot copy Parquet data, so it has to copy CSV file
 -- from the `temp` folder
 CREATE SCHEMA IF NOT EXISTS stage;
+
 DROP TABLE IF EXISTS stage.retail_profiling;
+
 CREATE TABLE stage.retail_profiling (
   invoice_number VARCHAR(16),
   stock_code VARCHAR(32),
@@ -12,6 +14,7 @@ CREATE TABLE stage.retail_profiling (
   customer_id INT,
   country VARCHAR(32)
 );
+
 COPY stage.retail_profiling (
   invoice_number,
   stock_code,

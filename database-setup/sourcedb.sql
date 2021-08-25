@@ -1,4 +1,5 @@
 CREATE SCHEMA IF NOT EXISTS ecommerce;
+
 CREATE TABLE ecommerce.retail_profiling (
   invoice_number VARCHAR(16),
   stock_code VARCHAR(32),
@@ -9,6 +10,7 @@ CREATE TABLE ecommerce.retail_profiling (
   customer_id INT,
   country VARCHAR(32)
 );
+
 COPY ecommerce.retail_profiling (
   invoice_number,
   stock_code,
