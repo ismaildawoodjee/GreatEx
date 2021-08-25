@@ -35,4 +35,4 @@ VALIDATION_STORE_CREDS:
     username: "storedb1"
     password: "storedb1"
     database: "storedb"
-    schema: validation
+    schema: systems
