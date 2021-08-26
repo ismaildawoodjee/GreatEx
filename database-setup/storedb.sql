@@ -21,12 +21,14 @@ CREATE TABLE logging.great_expectations (
   run_time TIMESTAMP,
   end_time TIMESTAMP,
   duration DECIMAL,
-  json_data JSONB
+  success BOOLEAN,
+  successful_expectations INTEGER,
+  evaluated_expectations INTEGER
 );
 
-DROP FUNCTION IF EXISTS logging.log_ge_validation;
 -- A function has to be defined first before a trigger can be created
 -- The `run_time` and `value` columns have to be casted to TIMESTAMP and JSONB
+DROP FUNCTION IF EXISTS logging.log_ge_validation;
 CREATE FUNCTION logging.log_ge_validation() RETURNS TRIGGER AS $trig_ge_validation$ BEGIN
 INSERT INTO
   logging.great_expectations (
@@ -36,7 +38,9 @@ INSERT INTO
     run_time,
     end_time,
     duration,
-    json_data
+    success,
+    successful_expectations,
+    evaluated_expectations
   )
 VALUES
   (
@@ -52,14 +56,15 @@ VALUES
           (
             (CURRENT_TIMESTAMP AT TIME ZONE 'UTC') - (NEW.run_time :: TIMESTAMP AT TIME ZONE 'UTC')
           )
-      ) :: NUMERIC,
-      2
-    ),
-    NEW.value :: JSONB
+      ) :: NUMERIC, 2),
+    (NEW.value :: JSONB ->> 'success') :: BOOLEAN,
+    (NEW.value :: JSONB -> 'statistics' ->> 'successful_expectations') :: INTEGER,
+    (NEW.value :: JSONB -> 'statistics' ->> 'evaluated_expectations') :: INTEGER
   );
 RETURN NULL;
 END;
 $trig_ge_validation$ LANGUAGE plpgsql;
+
 -- Create trigger as below once the function has been defined
 CREATE TRIGGER trig_ge_validation
 AFTER
