@@ -87,7 +87,8 @@ The setup was also tested on Ubuntu `v20.04` and can be run by following additio
     │   ├── uncommitted
     │   │   └── config_variables.yml
     │   ├── .gitignore
-    │   └── great_expectations.yml
+    │   ├── great_expectations.yml
+    │   └── validations.json
     ├── source-data
     │   ├── retail_profiling.csv
     │   └── retail_validating.csv
@@ -289,7 +290,18 @@ There are 3 scripts for each of the 3 databases (`postgres-source`, `postgres-de
   for consumption, e.g. creating dashboards and deriving insights from it. This table is only going to be
   populated after the entire pipeline has finished and all the data quality checks pass.
 
-- `storedb.sql` for the `postgres-store` database:
+- `storedb.sql` for the `postgres-store` database: In the `postgres-store` database, I created two schemas - the `systems`
+  schema and the `logging` schema. Within the `systems` schema, the `ge_validations_store` table is where the original data
+  validation results are going to be placed.
+
+  However, the data in `ge_validations_store` is not very useful for logging purposes, because most of the information about the
+  validations that were ran, i.e. what time the validation started, when it ended, how long it took, whether or not the data
+  quality check was successful, and what percentage of the tests/Expectations passed, are within a JSON object in one of the columns.
+
+  I extracted the useful info from the JSON file, added two columns to mark when the validation finished and its duration, and
+  created a trigger to `INSERT` a log record into the `logging.great_expectations` table whenever an `INSERT` operation is
+  done on the `systems.ge_validations_store`. The schemas, tables, and the trigger should be created when the `postgres-store`
+  database starts for the first time.
 
 ## Retail Pipeline DAG
 
