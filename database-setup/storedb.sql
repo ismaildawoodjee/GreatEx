@@ -21,9 +21,10 @@ CREATE TABLE logging.great_expectations (
   run_time TIMESTAMP,
   end_time TIMESTAMP,
   duration DECIMAL,
-  success BOOLEAN,
-  successful_expectations INTEGER,
-  evaluated_expectations INTEGER
+  successful_outcome BOOLEAN,
+  success_percent DECIMAL,
+  evaluated_expectations INTEGER,
+  file_path TEXT
 );
 
 -- A function has to be defined first before a trigger can be created
@@ -38,9 +39,10 @@ INSERT INTO
     run_time,
     end_time,
     duration,
-    success,
-    successful_expectations,
-    evaluated_expectations
+    successful_outcome,
+    success_percent,
+    evaluated_expectations,
+    file_path
   )
 VALUES
   (
@@ -56,11 +58,11 @@ VALUES
           (
             (CURRENT_TIMESTAMP AT TIME ZONE 'UTC') - (NEW.run_time :: TIMESTAMP AT TIME ZONE 'UTC')
           )
-      ) :: NUMERIC, 2),
+      ) :: DECIMAL, 2),
     (NEW.value :: JSONB ->> 'success') :: BOOLEAN,
-    ROUND((NEW.value :: JSONB -> 'statistics' ->> 'success_percent') :: NUMERIC, 2),
+    ROUND((NEW.value :: JSONB -> 'statistics' ->> 'success_percent') :: DECIMAL, 2),
     (NEW.value :: JSONB -> 'statistics' ->> 'evaluated_expectations') :: INTEGER,
-    (NEW.value :: JSONB -> 'meta' -> 'batch_spec' ->> 'path')
+    SPLIT_PART((NEW.value :: JSONB -> 'meta' -> 'batch_spec' ->> 'path'), '..', 2)
   );
 RETURN NULL;
 END;
@@ -71,3 +73,5 @@ CREATE TRIGGER trig_ge_validation
 AFTER
 INSERT
   ON systems.ge_validations_store FOR EACH ROW EXECUTE PROCEDURE logging.log_ge_validation();
+
+SELECT split_part('ordno-#-orddt-#-ordamt', '-#-', 2);
