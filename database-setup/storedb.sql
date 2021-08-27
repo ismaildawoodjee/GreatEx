@@ -58,8 +58,9 @@ VALUES
           )
       ) :: NUMERIC, 2),
     (NEW.value :: JSONB ->> 'success') :: BOOLEAN,
-    (NEW.value :: JSONB -> 'statistics' ->> 'successful_expectations') :: INTEGER,
-    (NEW.value :: JSONB -> 'statistics' ->> 'evaluated_expectations') :: INTEGER
+    ROUND((NEW.value :: JSONB -> 'statistics' ->> 'success_percent') :: NUMERIC, 2),
+    (NEW.value :: JSONB -> 'statistics' ->> 'evaluated_expectations') :: INTEGER,
+    (NEW.value :: JSONB -> 'meta' -> 'batch_spec' ->> 'path')
   );
 RETURN NULL;
 END;
