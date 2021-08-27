@@ -8,6 +8,7 @@
     - [Setup on Windows OS](#setup-on-windows-os)
     - [Post-Setup](#post-setup)
   - [About the `docker-compose` File](#about-the-docker-compose-file)
+  - [Database Setup SQL Scripts](#database-setup-sql-scripts)
   - [Retail Pipeline DAG](#retail-pipeline-dag)
   - [Configuring Great Expectations](#configuring-great-expectations)
   - [Running the DAG](#running-the-dag)
@@ -55,7 +56,8 @@ The setup was also tested on Ubuntu `v20.04` and can be run by following additio
     │   └── validations.py
     ├── database-setup
     │   ├── destinationdb.sql
-    │   └── sourcedb.sql
+    │   ├── sourcedb.sql
+    │   └── storedb.sql
     ├── debugging
     │   └── logging.ini
     ├── dest-data
@@ -94,11 +96,11 @@ The setup was also tested on Ubuntu `v20.04` and can be run by following additio
     ├── .gitattributes
     ├── .gitignore
     ├── airflow_conn.ps1
-    ├── airflow_conn.sh
     ├── docker-compose.yml
     ├── Dockerfile
     ├── README.md
-    └── requirements.txt
+    ├── requirements.txt
+    └── setup.sh
 
 ## Setup
 
@@ -143,7 +145,7 @@ A third prompt may ask the user to enter their `sudo` password, in order to prov
 run the `docker-compose` file and set up the Airflow containers.
 
 Finally, after all of the setup steps are done, the Airflow UI will open up in your browser at `localhost:8080`, where
-you can login using the username and password `airflow`, and run the data pipeline.
+you can login using the default username and password `airflow`, and run the data pipeline.
 
 ### Setup on Windows OS
 
@@ -189,7 +191,7 @@ If the Airflow initialization was successful, there will be a return code of 0 s
 
 ![Return Code 0](assets/images/airflow_init_success_code.png)
 
-Then, start the containers in the background (prepending `sudo` if needed):
+Then, start the containers in the background:
 
     docker-compose up --build -d
 
@@ -270,6 +272,24 @@ for running Airflow in Docker. I modified it in several different ways:
   This also applies to username, password and database names.
 
 - The Docker images for Airflow and Postgres can be any supported version, but I specified them to use the `latest` tag, and used Python version 3.8.
+
+## Database Setup SQL Scripts
+
+The SQL scripts in the `database-setup` folder are automatically going to be run when the Postgres containers
+are created. This is because the scripts are mounted into the `docker-entrypoint-initdb.d` folder, and scripts that are placed
+inside this special folder get executed when the containers start for the first time.
+
+There are 3 scripts for each of the 3 databases (`postgres-source`, `postgres-dest`, and `postgres-store`):
+
+- `sourcedb.sql` for the `postgres-source` database: This script sets up the schema and table, and copies the
+  `retail_profiling.csv` CSV file over onto the table. Here, we are pretending that our source data comes from
+  a relational database, and this script sets this up for us.
+
+- `destdb.sql` for the `postgres-dest` database: This script creates a public facing table that can be used
+  for consumption, e.g. creating dashboards and deriving insights from it. This table is only going to be
+  populated after the entire pipeline has finished and all the data quality checks pass.
+
+- `storedb.sql` for the `postgres-store` database:
 
 ## Retail Pipeline DAG
 
