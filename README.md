@@ -3,6 +3,10 @@
 - [Airflow Data Pipeline Validation with Great Expectations](#airflow-data-pipeline-validation-with-great-expectations)
   - [Introduction](#introduction)
   - [Setup](#setup)
+    - [Pre-Setup](#pre-setup)
+    - [Setup on Linux OS](#setup-on-linux-os)
+    - [Setup on Windows OS](#setup-on-windows-os)
+    - [Post-Setup](#post-setup)
   - [About the `docker-compose` File](#about-the-docker-compose-file)
   - [Retail Pipeline DAG](#retail-pipeline-dag)
   - [Configuring Great Expectations](#configuring-great-expectations)
@@ -98,6 +102,8 @@ The setup was also tested on Ubuntu `v20.04` and can be run by following additio
 
 ## Setup
 
+### Pre-Setup
+
 To clone the source data from this repository, `git-lfs` or Git Large File Storage must be installed first.
 On Windows OS, follow the instructions from this [website](https://git-lfs.github.com/). On Linux, run the following
 command to install `git-lfs` on your system:
@@ -114,13 +120,36 @@ or `head -n 10 source-data/retail_profiling.csv` with Bash, or just opening it a
 
 ![CSV file contents](assets/images/source_data.png)
 
-Prepare a Python virtual environment (assuming Windows OS),
+### Setup on Linux OS
+
+Before starting the setup, ensure that Docker is running.
+On a Linux OS, simply run the `setup.sh` Bash script as follows
+(do NOT run as `./setup.sh`, else the Python virtual environment will not be activated):
+
+    source setup.sh
+
+and follow the instructions when prompted.
+
+The first prompt will ask the user to reinitialize the `great_expectations` folder,
+which can be done by pressing `Y`. A warning will say that some credentials are not
+found, but this can be ignored since we're going to be running the data pipeline on
+containers, not on the local system.
+
+The second prompt will ask the user to enter Receiver Email(s), Sender Gmail and Sender Password.
+This is for sending alerts from the Sender to the Receiver(s) when one of the data validation tasks fails. If email alerts are
+not required, just enter some random letters. Afterwards, they can still be configured as shown in the `.env-example` file.
+
+A third prompt may ask the user to enter their `sudo` password, in order to provide file permissions,
+run the `docker-compose` file and set up the Airflow containers.
+
+Finally, after all of the setup steps are done, the Airflow UI will open up in your browser at `localhost:8080`, where
+you can login using the username and password `airflow`, and run the data pipeline.
+
+### Setup on Windows OS
+
+Prepare a Python virtual environment:
 
     python -m venv .venv; .venv\Scripts\activate
-
-If on a Linux OS, run the following:
-
-    python3 -m venv .venv; source .venv/bin/activate
 
 Install Great Expectations and required dependencies with
 
@@ -156,14 +185,6 @@ and run the second command to initialize Airflow containers:
     Add-Content -Path .\.env -Value "`nLOCAL_DIRECTORY=$pwd"
     docker-compose up --build airflow-init
 
-On Linux OS, additional commands need to be run to provide permissions for read/write
-(prepending `sudo` and providing permissions where needed):
-
-    echo -e "\nAIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0\nLOCAL_DIRECTORY=$(pwd)" >> .env
-    mkdir ./logs ./plugins
-    sudo chmod 777 dags/* logs/ filesystem/* database-setup/* source-data/* dest-data/* great_expectations/*
-    sudo docker-compose up --build airflow-init
-
 If the Airflow initialization was successful, there will be a return code of 0 shown below:
 
 ![Return Code 0](assets/images/airflow_init_success_code.png)
@@ -177,10 +198,6 @@ a convenience script with `airflow_conn.ps1`. Run this Powershell script with:
 
     .\airflow_conn.ps1
 
-Or if using a Linux machine, run the Bash script below (this will ask you for your `sudo` password):
-
-    ./airflow_conn.sh
-
 If you are using VS Code, you can check the health of the containers with the Docker extension:
 
 ![Container health from Docker extension](assets/images/container_health.png)
@@ -189,6 +206,8 @@ Otherwise, type `docker ps -a` into the terminal to check their health status.
 Once the Airflow Scheduler and Webserver are in a healthy state, you can go to `localhost:8080` in
 the webbrowser to log into the Airflow UI (using default username: "airflow" and password: "airflow")
 and run the data pipeline.
+
+### Post-Setup
 
 The `greatex_airflow-init_1` container is expected to exit after initializing the Airflow containers,
 but the rest of the containers should be healthy and functioning after several minutes. If they become unhealthy
@@ -200,6 +219,10 @@ After you are finished with exploring the pipeline, tear down the infrastructure
 (stopping containers, removing images and volumes):
 
     docker-compose down --volumes --rmi all
+
+If you do not wish to remove the images, use the following command instead:
+
+    docker-compose down --volumes
 
 ## About the `docker-compose` File
 
