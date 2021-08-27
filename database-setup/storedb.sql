@@ -73,5 +73,3 @@ CREATE TRIGGER trig_ge_validation
 AFTER
 INSERT
   ON systems.ge_validations_store FOR EACH ROW EXECUTE PROCEDURE logging.log_ge_validation();
-
-SELECT split_part('ordno-#-orddt-#-ordamt', '-#-', 2);
