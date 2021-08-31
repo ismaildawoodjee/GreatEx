@@ -7,6 +7,7 @@
     - [Setup on Linux OS](#setup-on-linux-os)
     - [Setup on Windows OS](#setup-on-windows-os)
     - [Post-Setup](#post-setup)
+  - [Steps to Submit a Pull Request](#steps-to-submit-a-pull-request)
   - [About the `docker-compose` File](#about-the-docker-compose-file)
   - [Database Setup SQL Scripts](#database-setup-sql-scripts)
   - [Retail Pipeline DAG](#retail-pipeline-dag)
@@ -123,6 +124,13 @@ or `head -n 10 source-data/retail_profiling.csv` with Bash, or just opening it a
 
 ![CSV file contents](assets/images/source_data.png)
 
+If you accidentally deleted the `source-data` folder (or the files within) and cannot recover it, you can run
+
+    git lfs pull
+
+from the `GreatEx` root directory to download the folder and the two files within.
+This still requires `git-lfs` to be installed, however.
+
 ### Setup on Linux OS
 
 Before starting the setup, ensure that Docker is running.
@@ -215,7 +223,7 @@ and run the data pipeline.
 The `greatex_airflow-init_1` container is expected to exit after initializing the Airflow containers,
 but the rest of the containers should be healthy and functioning after several minutes. If they become unhealthy
 or keep exiting, more memory needs to be allocated to the Docker engine, which can be done via the [.wslconfig](https://docs.microsoft.com/en-us/windows/wsl/wsl-config#configure-global-options-with-wslconfig)
-file in Windows. If you are using the Docker Desktop application in Linux or MacOS, you can got to Settings -> Resources
+file in Windows. If you are using the Docker Desktop application in Linux or MacOS, you can go to Settings -> Resources
 and increase the memory there.
 
 After you are finished with exploring the pipeline, tear down the infrastructure
@@ -226,6 +234,28 @@ After you are finished with exploring the pipeline, tear down the infrastructure
 If you do not wish to remove the images, use the following command instead:
 
     docker-compose down --volumes
+
+## Steps to Submit a Pull Request
+
+Similar to the steps from [Great Expectations contribution page](https://docs.greatexpectations.io/docs/contributing/contributing_setup).
+
+1. Fork this repo.
+
+2. Clone your forked repo (NOT the original repo).
+  
+3. Add remote upstream by running:
+  
+        git remote add upstream git@github.com:ismaildawoodjee/GreatEx.git
+
+4. Create a new branch and work on that branch:
+
+        git checkout -b example-branch
+
+5. Add changes, commit, and push to the branch in your fork:
+
+        git push --set-upstream origin example-branch
+
+6. Open pull request from `example-branch` branch.
 
 ## About the `docker-compose` File
 
