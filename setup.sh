@@ -13,11 +13,27 @@ START_TIME=$(date +"%s")
 DATE_TIME=$(date +"%x %r %Z")
 echo -e "$(tput setaf 2)INFO: Started setup at $DATE_TIME\n$(tput sgr 0)"
 
-# Ensure that Docker is running
-if [ "$(systemctl is-active docker)" != "active" ]; then
-    echo "$(tput setaf 1)ERROR: Docker is not running." \
-        "Start Docker with 'sudo service docker start'.$(tput sgr 0)"
-    exit 1
+# For Ubuntu Linux - Check that Docker is running
+if [[ uname == 'Ubuntu'* ]]; then
+    if [ "$(systemctl is-active docker)" != "active" ]; then
+        echo "$(tput setaf 1)ERROR: Docker is not running." \
+             "Start Docker with 'sudo service docker start'.$(tput sgr 0)"
+        exit 1
+    fi
+fi
+
+# For Mac OS - Check that Docker is running
+if [[ $OSTYPE == 'darwin'* ]]; then
+    if (! docker stats --no-stream ); then
+      # On Mac OS this would be the terminal command to launch Docker
+      open /Applications/Docker.app
+     #Wait until Docker daemon is running and has completed initialisation
+    while (! docker stats --no-stream ); do
+      # Docker takes a few seconds to initialize
+      echo "Waiting for Docker to launch..."
+      sleep 1
+    done
+    fi
 fi
 
 PROJECT_NAME="greatex"
@@ -41,19 +57,16 @@ function reinitialize_great_expectations () {
 
 function setup_environment_variables () {
     echo -e "$(tput setaf 3)INFO: Setting up environment variables. Enter comma-separated" \
-        "Receiver email(s), and Sender Gmail and password.$(tput sgr 0)"
+            "Receiver email(s), and Sender Gmail and password.$(tput sgr 0)"
     echo -e "$(tput setaf 3)Ensure that 'Less Secure Apps' is ON if sending alerts via Gmail.\n$(tput sgr 0)"
-    
     echo -e "SOURCEDB_CONN = postgresql+psycopg2://sourcedb1:sourcedb1@postgres-source:5432/sourcedb
 DESTDB_CONN = postgresql+psycopg2://destdb1:destdb1@postgres-dest:5432/destdb
-STOREDB_CONN = postgresql+psycopg2://storedb1:storedb1@postgres-store:5432/storedb\n
+STOREDB_CONN = postgresql+psycopg2://storedb1:storedb1@postgres-store:5432/storedb
 SMTP_ADDRESS = smtp.gmail.com
 SMTP_PORT = 587" >> .env
-
-    read -rp 'Receiver Email(s): ' RECEIVER_EMAILS
-    read -rp 'Sender Email: ' SENDER_LOGIN
-    read -rsp 'Sender Password: ' SENDER_PASSWORD
-
+    printf "Enter Receiver Email(s),Sender Email, and Sender Password as a single string seperated by a space: "
+    IFS=' '
+    read RECEIVER_EMAILS SENDER_LOGIN SENDER_PASSWORD
     echo -e "SENDER_LOGIN = $SENDER_LOGIN
 SENDER_PASSWORD = $SENDER_PASSWORD
 RECEIVER_EMAILS = $RECEIVER_EMAILS" >> .env
@@ -64,6 +77,7 @@ function setup_airflow_containers () {
 
     echo -e "\nAIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0\nLOCAL_DIRECTORY=$(pwd)" >> .env
     mkdir ./logs ./plugins
+    printf "Enter SUDO password to proceed.\n"
     sudo chmod 777 dags/* logs/ plugins/ filesystem/* database-setup/* \
         source-data/* dest-data/* great_expectations/*
 
