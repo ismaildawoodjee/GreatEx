@@ -13,13 +13,6 @@ START_TIME=$(date +"%s")
 DATE_TIME=$(date +"%x %r %Z")
 echo -e "$(tput setaf 2)INFO: Started setup at $DATE_TIME\n$(tput sgr 0)"
 
-# Ensure that Docker is running
-if [ "$(systemctl is-active docker)" != "active" ]; then
-    echo "$(tput setaf 1)ERROR: Docker is not running." \
-        "Start Docker with 'sudo service docker start'.$(tput sgr 0)"
-    exit 1
-fi
-
 PROJECT_NAME="greatex"
 
 function prepare_python_environment () {
