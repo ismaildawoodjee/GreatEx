@@ -1,4 +1,4 @@
-great_expectations==0.13.25
+great_expectations==0.13.31
 sqlalchemy
 psycopg2-binary
 pyarrow
