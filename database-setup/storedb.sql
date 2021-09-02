@@ -62,7 +62,7 @@ VALUES
     (NEW.value :: JSONB ->> 'success') :: BOOLEAN,
     ROUND((NEW.value :: JSONB -> 'statistics' ->> 'success_percent') :: DECIMAL, 2),
     (NEW.value :: JSONB -> 'statistics' ->> 'evaluated_expectations') :: INTEGER,
-    SPLIT_PART((NEW.value :: JSONB -> 'meta' -> 'batch_spec' ->> 'path'), '..', 2)
+    NEW.value :: JSONB -> 'meta' -> 'batch_spec' ->> 'path'
   );
 RETURN NULL;
 END;
