@@ -117,6 +117,7 @@ def create_expectation_suite(expectation_suite_name):
         batch_request=batch_request, expectation_suite_name=expectation_suite_name
     )
     # Add Expectations here
+    # Table-Level Expectations
     validator.expect_table_columns_to_match_ordered_list(
         column_list=[
             "invoice_number",
@@ -129,10 +130,234 @@ def create_expectation_suite(expectation_suite_name):
             "country",
         ]
     )
+    validator.expect_table_row_count_to_be_between(max_value=300000, min_value=250000)
+    # Column-level Expectations
+    # invoice_number
+    validator.expect_column_values_to_not_be_null(column="invoice_number")
+    validator.expect_column_values_to_be_in_type_list(
+        column="invoice_number",
+        type_list=[
+            "CHAR",
+            "NCHAR",
+            "VARCHAR",
+            "NVARCHAR",
+            "TEXT",
+            "NTEXT",
+            "STRING",
+            "StringType",
+            "string",
+            "str",
+            "object",
+            "dtype('O')",
+        ],
+    )
+    # stock_code
+    validator.expect_column_values_to_not_be_null(column="stock_code")
+    validator.expect_column_values_to_be_in_type_list(
+        column="stock_code",
+        type_list=[
+            "CHAR",
+            "NCHAR",
+            "VARCHAR",
+            "NVARCHAR",
+            "TEXT",
+            "NTEXT",
+            "STRING",
+            "StringType",
+            "string",
+            "str",
+            "object",
+            "dtype('O')",
+        ],
+    )
+    # detail
+    validator.expect_column_values_to_not_be_null(column="detail", mostly=0.99)
+    validator.expect_column_values_to_be_in_type_list(
+        column="detail",
+        type_list=[
+            "CHAR",
+            "NCHAR",
+            "VARCHAR",
+            "NVARCHAR",
+            "TEXT",
+            "NTEXT",
+            "STRING",
+            "StringType",
+            "string",
+            "str",
+            "object",
+            "dtype('O')",
+        ],
+    )
+    # quantity
     validator.expect_column_min_to_be_between(
         column="quantity", min_value=0, max_value=0
     )
+    validator.expect_column_max_to_be_between(
+        column="quantity", max_value=100000, min_value=50000
+    )
     validator.expect_column_values_to_not_be_null(column="quantity")
+    validator.expect_column_values_to_be_in_type_list(
+        column="quantity",
+        type_list=[
+            "INTEGER",
+            "integer",
+            "int",
+            "int_",
+            "int8",
+            "int16",
+            "int32",
+            "int64",
+            "uint8",
+            "uint16",
+            "uint32",
+            "uint64",
+            "INT",
+            "INTEGER",
+            "INT64",
+            "TINYINT",
+            "BYTEINT",
+            "SMALLINT",
+            "BIGINT",
+            "IntegerType",
+            "LongType",
+        ],
+    )
+    # invoice_date
+    validator.expect_column_values_to_not_be_null(column="invoice_date")
+    validator.expect_column_values_to_match_strftime_format(
+        column="invoice_date", strftime_format="%Y-%m-%d %H:%M:%S"
+    )
+    validator.expect_column_values_to_be_in_type_list(
+        column="invoice_date",
+        type_list=[
+            "CHAR",
+            "NCHAR",
+            "VARCHAR",
+            "NVARCHAR",
+            "TEXT",
+            "NTEXT",
+            "STRING",
+            "StringType",
+            "string",
+            "str",
+            "object",
+            "dtype('O')",
+        ],
+    )
+    # unit_price
+    validator.expect_column_min_to_be_between(
+        column="unit_price", max_value=0.0, min_value=0.0
+    )
+    validator.expect_column_max_to_be_between(
+        column="unit_price", max_value=45000.00, min_value=35000.00
+    )
+    validator.expect_column_values_to_not_be_null(column="unit_price")
+    validator.expect_column_values_to_be_in_type_list(
+        column="unit_price",
+        type_list=[
+            "FLOAT",
+            "FLOAT4",
+            "FLOAT8",
+            "FLOAT64",
+            "DOUBLE",
+            "DOUBLE_PRECISION",
+            "NUMERIC",
+            "FloatType",
+            "DoubleType",
+            "float_",
+            "float16",
+            "float32",
+            "float64",
+            "number",
+            "DECIMAL",
+            "REAL",
+        ],
+    )
+    # customer_id
+    validator.expect_column_values_to_not_be_null(column="customer_id", mostly=0.7)
+    validator.expect_column_values_to_be_in_type_list(
+        column="customer_id",
+        type_list=[
+            "FLOAT",
+            "FLOAT4",
+            "FLOAT8",
+            "FLOAT64",
+            "DOUBLE",
+            "DOUBLE_PRECISION",
+            "NUMERIC",
+            "FloatType",
+            "DoubleType",
+            "float_",
+            "float16",
+            "float32",
+            "float64",
+            "number",
+            "DECIMAL",
+            "REAL",
+        ],
+    )
+    # country
+    validator.expect_column_values_to_be_in_set(
+        column="country",
+        value_set=[
+            "Australia",
+            "Austria",
+            "Bahrain",
+            "Belgium",
+            "Brazil",
+            "Canada",
+            "Channel Islands",
+            "Cyprus",
+            "Czech Republic",
+            "Denmark",
+            "EIRE",
+            "European Community",
+            "Finland",
+            "France",
+            "Germany",
+            "Greece",
+            "Hong Kong",
+            "Iceland",
+            "Israel",
+            "Italy",
+            "Japan",
+            "Lebanon",
+            "Lithuania",
+            "Malta",
+            "Netherlands",
+            "Norway",
+            "Poland",
+            "Portugal",
+            "Saudi Arabia",
+            "Singapore",
+            "Spain",
+            "Sweden",
+            "Switzerland",
+            "USA",
+            "United Arab Emirates",
+            "United Kingdom",
+            "Unspecified",
+        ],
+    )
+    validator.expect_column_values_to_not_be_null(column="country")
+    validator.expect_column_values_to_be_in_type_list(
+        column="country",
+        type_list=[
+            "CHAR",
+            "NCHAR",
+            "VARCHAR",
+            "NVARCHAR",
+            "TEXT",
+            "NTEXT",
+            "STRING",
+            "StringType",
+            "string",
+            "str",
+            "object",
+            "dtype('O')",
+        ],
+    )
     # Save Expectations to JSON
     validator.save_expectation_suite(discard_failed_expectations=False)
 
