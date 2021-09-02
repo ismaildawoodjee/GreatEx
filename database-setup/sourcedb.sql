@@ -1,6 +1,8 @@
 -- This is the setup script for the postgres-source database.
 CREATE SCHEMA IF NOT EXISTS ecommerce;
 
+DROP TABLE IF EXISTS ecommerce.retail_profiling;
+
 CREATE TABLE ecommerce.retail_profiling (
   invoice_number VARCHAR(16),
   stock_code VARCHAR(32),
