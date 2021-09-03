@@ -116,7 +116,7 @@ def create_expectation_suite(expectation_suite_name):
     validator = context.get_validator(
         batch_request=batch_request, expectation_suite_name=expectation_suite_name
     )
-    # Add Expectations here
+    # Add Expectations here:
     # Table-Level Expectations
     validator.expect_table_columns_to_match_ordered_list(
         column_list=[
@@ -136,58 +136,17 @@ def create_expectation_suite(expectation_suite_name):
     validator.expect_column_values_to_not_be_null(column="invoice_number")
     validator.expect_column_values_to_be_in_type_list(
         column="invoice_number",
-        type_list=[
-            "CHAR",
-            "NCHAR",
-            "VARCHAR",
-            "NVARCHAR",
-            "TEXT",
-            "NTEXT",
-            "STRING",
-            "StringType",
-            "string",
-            "str",
-            "object",
-            "dtype('O')",
-        ],
+        type_list=["str"],
     )
     # stock_code
     validator.expect_column_values_to_not_be_null(column="stock_code")
     validator.expect_column_values_to_be_in_type_list(
-        column="stock_code",
-        type_list=[
-            "CHAR",
-            "NCHAR",
-            "VARCHAR",
-            "NVARCHAR",
-            "TEXT",
-            "NTEXT",
-            "STRING",
-            "StringType",
-            "string",
-            "str",
-            "object",
-            "dtype('O')",
-        ],
+        column="stock_code", type_list=["str"]
     )
     # detail
     validator.expect_column_values_to_not_be_null(column="detail")
     validator.expect_column_values_to_be_in_type_list(
-        column="detail",
-        type_list=[
-            "CHAR",
-            "NCHAR",
-            "VARCHAR",
-            "NVARCHAR",
-            "TEXT",
-            "NTEXT",
-            "STRING",
-            "StringType",
-            "string",
-            "str",
-            "object",
-            "dtype('O')",
-        ],
+        column="detail", type_list=["str"]
     )
     # quantity
     validator.expect_column_min_to_be_between(
@@ -198,30 +157,7 @@ def create_expectation_suite(expectation_suite_name):
     )
     validator.expect_column_values_to_not_be_null(column="quantity")
     validator.expect_column_values_to_be_in_type_list(
-        column="quantity",
-        type_list=[
-            "INTEGER",
-            "integer",
-            "int",
-            "int_",
-            "int8",
-            "int16",
-            "int32",
-            "int64",
-            "uint8",
-            "uint16",
-            "uint32",
-            "uint64",
-            "INT",
-            "INTEGER",
-            "INT64",
-            "TINYINT",
-            "BYTEINT",
-            "SMALLINT",
-            "BIGINT",
-            "IntegerType",
-            "LongType",
-        ],
+        column="quantity", type_list=["int64"]
     )
     # invoice_date
     validator.expect_column_values_to_not_be_null(column="invoice_date")
@@ -229,21 +165,7 @@ def create_expectation_suite(expectation_suite_name):
         column="invoice_date", strftime_format="%Y-%m-%d %H:%M:%S"
     )
     validator.expect_column_values_to_be_in_type_list(
-        column="invoice_date",
-        type_list=[
-            "CHAR",
-            "NCHAR",
-            "VARCHAR",
-            "NVARCHAR",
-            "TEXT",
-            "NTEXT",
-            "STRING",
-            "StringType",
-            "string",
-            "str",
-            "object",
-            "dtype('O')",
-        ],
+        column="invoice_date", type_list=["str"]
     )
     # unit_price
     validator.expect_column_min_to_be_between(
@@ -254,53 +176,12 @@ def create_expectation_suite(expectation_suite_name):
     )
     validator.expect_column_values_to_not_be_null(column="unit_price")
     validator.expect_column_values_to_be_in_type_list(
-        column="unit_price",
-        type_list=[
-            "FLOAT",
-            "FLOAT4",
-            "FLOAT8",
-            "FLOAT64",
-            "DOUBLE",
-            "DOUBLE_PRECISION",
-            "NUMERIC",
-            "FloatType",
-            "DoubleType",
-            "float_",
-            "float16",
-            "float32",
-            "float64",
-            "number",
-            "DECIMAL",
-            "REAL",
-        ],
+        column="unit_price", type_list=["float64"]
     )
     # customer_id
     validator.expect_column_values_to_not_be_null(column="customer_id")
     validator.expect_column_values_to_be_in_type_list(
-        column="customer_id",
-        type_list=[
-            "INTEGER",
-            "integer",
-            "int",
-            "int_",
-            "int8",
-            "int16",
-            "int32",
-            "int64",
-            "uint8",
-            "uint16",
-            "uint32",
-            "uint64",
-            "INT",
-            "INTEGER",
-            "INT64",
-            "TINYINT",
-            "BYTEINT",
-            "SMALLINT",
-            "BIGINT",
-            "IntegerType",
-            "LongType",
-        ],
+        column="customer_id", type_list=["int16"]
     )
     # country
     validator.expect_column_values_to_be_in_set(
@@ -347,21 +228,7 @@ def create_expectation_suite(expectation_suite_name):
     )
     validator.expect_column_values_to_not_be_null(column="country", mostly=0.99)
     validator.expect_column_values_to_be_in_type_list(
-        column="country",
-        type_list=[
-            "CHAR",
-            "NCHAR",
-            "VARCHAR",
-            "NVARCHAR",
-            "TEXT",
-            "NTEXT",
-            "STRING",
-            "StringType",
-            "string",
-            "str",
-            "object",
-            "dtype('O')",
-        ],
+        column="country", type_list=["str"]
     )
     # Save Expectations to JSON
     validator.save_expectation_suite(discard_failed_expectations=False)

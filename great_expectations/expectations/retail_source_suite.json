@@ -38,18 +38,7 @@
       "kwargs": {
         "column": "invoice_number",
         "type_list": [
-          "CHAR",
-          "NCHAR",
-          "VARCHAR",
-          "NVARCHAR",
-          "TEXT",
-          "NTEXT",
-          "STRING",
-          "StringType",
-          "string",
-          "str",
-          "object",
-          "dtype('O')"
+          "VARCHAR"
         ]
       },
       "meta": {}
@@ -66,18 +55,7 @@
       "kwargs": {
         "column": "stock_code",
         "type_list": [
-          "CHAR",
-          "NCHAR",
-          "VARCHAR",
-          "NVARCHAR",
-          "TEXT",
-          "NTEXT",
-          "STRING",
-          "StringType",
-          "string",
-          "str",
-          "object",
-          "dtype('O')"
+          "VARCHAR"
         ]
       },
       "meta": {}
@@ -95,18 +73,7 @@
       "kwargs": {
         "column": "detail",
         "type_list": [
-          "CHAR",
-          "NCHAR",
-          "VARCHAR",
-          "NVARCHAR",
-          "TEXT",
-          "NTEXT",
-          "STRING",
-          "StringType",
-          "string",
-          "str",
-          "object",
-          "dtype('O')"
+          "VARCHAR"
         ]
       },
       "meta": {}
@@ -141,27 +108,7 @@
       "kwargs": {
         "column": "quantity",
         "type_list": [
-          "INTEGER",
-          "integer",
-          "int",
-          "int_",
-          "int8",
-          "int16",
-          "int32",
-          "int64",
-          "uint8",
-          "uint16",
-          "uint32",
-          "uint64",
-          "INT",
-          "INTEGER",
-          "INT64",
-          "TINYINT",
-          "BYTEINT",
-          "SMALLINT",
-          "BIGINT",
-          "IntegerType",
-          "LongType"
+          "INTEGER"
         ]
       },
       "meta": {}
@@ -213,22 +160,7 @@
       "kwargs": {
         "column": "unit_price",
         "type_list": [
-          "FLOAT",
-          "FLOAT4",
-          "FLOAT8",
-          "FLOAT64",
-          "DOUBLE",
-          "DOUBLE_PRECISION",
-          "NUMERIC",
-          "FloatType",
-          "DoubleType",
-          "float_",
-          "float16",
-          "float32",
-          "float64",
-          "number",
-          "DECIMAL",
-          "REAL"
+          "NUMERIC"
         ]
       },
       "meta": {}
@@ -246,27 +178,7 @@
       "kwargs": {
         "column": "customer_id",
         "type_list": [
-          "INTEGER",
-          "integer",
-          "int",
-          "int_",
-          "int8",
-          "int16",
-          "int32",
-          "int64",
-          "uint8",
-          "uint16",
-          "uint32",
-          "uint64",
-          "INT",
-          "INTEGER",
-          "INT64",
-          "TINYINT",
-          "BYTEINT",
-          "SMALLINT",
-          "BIGINT",
-          "IntegerType",
-          "LongType"
+          "INTEGER"
         ]
       },
       "meta": {}
@@ -329,18 +241,7 @@
       "kwargs": {
         "column": "country",
         "type_list": [
-          "CHAR",
-          "NCHAR",
-          "VARCHAR",
-          "NVARCHAR",
-          "TEXT",
-          "NTEXT",
-          "STRING",
-          "StringType",
-          "string",
-          "str",
-          "object",
-          "dtype('O')"
+          "VARCHAR"
         ]
       },
       "meta": {}
