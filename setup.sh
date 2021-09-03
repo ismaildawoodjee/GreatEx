@@ -27,7 +27,7 @@ if [[ $OSTYPE == 'darwin'* ]]; then
     if (! docker stats --no-stream ); then
       # On Mac OS this would be the terminal command to launch Docker
       open /Applications/Docker.app
-     #Wait until Docker daemon is running and has completed initialisation
+    # Wait until Docker daemon is running and has completed initialisation
     while (! docker stats --no-stream ); do
       # Docker takes a few seconds to initialize
       echo "Waiting for Docker to launch..."
@@ -56,17 +56,20 @@ function reinitialize_great_expectations () {
 }
 
 function setup_environment_variables () {
-    echo -e "$(tput setaf 3)INFO: Setting up environment variables. Enter comma-separated" \
-            "Receiver email(s), and Sender Gmail and password.$(tput sgr 0)"
+    echo -e "$(tput setaf 3)INFO: Setting up environment variables. Enter" \
+            "Receiver email, and Sender Gmail and password.$(tput sgr 0)"
     echo -e "$(tput setaf 3)Ensure that 'Less Secure Apps' is ON if sending alerts via Gmail.\n$(tput sgr 0)"
+
     echo -e "SOURCEDB_CONN = postgresql+psycopg2://sourcedb1:sourcedb1@postgres-source:5432/sourcedb
 DESTDB_CONN = postgresql+psycopg2://destdb1:destdb1@postgres-dest:5432/destdb
 STOREDB_CONN = postgresql+psycopg2://storedb1:storedb1@postgres-store:5432/storedb
 SMTP_ADDRESS = smtp.gmail.com
 SMTP_PORT = 587" >> .env
+
     printf "Enter Receiver Email(s),Sender Email, and Sender Password as a single string seperated by a space: "
     IFS=' '
     read RECEIVER_EMAILS SENDER_LOGIN SENDER_PASSWORD
+    
     echo -e "SENDER_LOGIN = $SENDER_LOGIN
 SENDER_PASSWORD = $SENDER_PASSWORD
 RECEIVER_EMAILS = $RECEIVER_EMAILS" >> .env
@@ -79,7 +82,7 @@ function setup_airflow_containers () {
     mkdir ./logs ./plugins
     printf "Enter SUDO password to proceed.\n"
     sudo chmod 777 dags/* logs/ plugins/ filesystem/* database-setup/* \
-        source-data/* dest-data/* great_expectations/*
+        source-data/* dest-data/ great_expectations/*
 
     echo -e "$(tput setaf 3)INFO: Initializing Airflow containers...\n$(tput sgr 0)"
     until sudo docker-compose up --build airflow-init; do
@@ -93,7 +96,9 @@ function setup_airflow_containers () {
     sleep 60
     echo -e "$(tput setaf 3)INFO: One minute left...\n"
     sleep 60
+}
 
+function add_database_connections () {
     echo -e "$(tput setaf 3)INFO: Adding Postgres database connections to Airflow...\n$(tput sgr 0)"
     sudo docker exec -d "$PROJECT_NAME"_airflow-webserver_1 \
         airflow connections add "postgres_source" \
@@ -121,6 +126,7 @@ prepare_python_environment
 reinitialize_great_expectations
 setup_environment_variables
 setup_airflow_containers
+add_database_connections
 
 END_TIME=$(date +"%s")
 DURATION=$((END_TIME - START_TIME))
