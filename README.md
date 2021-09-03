@@ -8,13 +8,16 @@
     - [Setup on Windows OS](#setup-on-windows-os)
     - [Post-Setup](#post-setup)
   - [Steps to Submit a Pull Request](#steps-to-submit-a-pull-request)
+    - [Commit Description Prefixes](#commit-description-prefixes)
   - [About the `docker-compose` File](#about-the-docker-compose-file)
   - [Database Setup SQL Scripts](#database-setup-sql-scripts)
   - [Retail Pipeline DAG](#retail-pipeline-dag)
-  - [Configuring Great Expectations](#configuring-great-expectations)
-  - [Running the DAG](#running-the-dag)
+  - [Using Great Expectations with Airflow](#using-great-expectations-with-airflow)
     - [Airflow Log Output](#airflow-log-output)
     - [Email on Validation Failure](#email-on-validation-failure)
+    - [Ensuring Idempotence](#ensuring-idempotence)
+    - [Testing Another Dataset](#testing-another-dataset)
+  - [Configuring Great Expectations (optional)](#configuring-great-expectations-optional)
 
 ## Introduction
 
@@ -25,7 +28,7 @@ for running on both Windows and Linux OS. The flowchart below shows the high-lev
 
 ![Data pipeline](assets/images/pipeline.png)
 
-I will be using Great Expectations `v0.13.25` and the Version 3 API, Docker `v20.10.7` (and Docker Desktop in Windows),
+I will be using Great Expectations `v0.13.31` and the Version 3 API, Docker `v20.10.7` (and Docker Desktop in Windows),
 `docker-compose` `v1.29.2`, Python `v3.8.10` for the containers (`v3.9.5` on local machine), and Windows OS (Windows 10).
 The setup was also tested on Ubuntu `v20.04` and can be run by following additional instructions in the [Setup](#setup) section.
 
@@ -109,6 +112,8 @@ The setup was also tested on Ubuntu `v20.04` and can be run by following additio
 ### Pre-Setup
 
 To clone the source data from this repository, `git-lfs` or Git Large File Storage must be installed first.
+The data is about 44 MB in total.
+
 On Windows OS, follow the instructions from this [website](https://git-lfs.github.com/). On Linux, run the following
 command to install `git-lfs` on your system:
 
@@ -257,6 +262,14 @@ Similar to the steps from [Great Expectations contribution page](https://docs.gr
 
 6. Open pull request from `example-branch` branch.
 
+### Commit Description Prefixes
+
+- `[MAINTENANCE]`: when rewriting the same code or making minor changes to the code
+- `[ENHANCEMENT]`: when improving the functionality of code
+- `[FEATURE]`: when adding a completely new feature, such as a Shell script or a new container
+- `[BUGFIX]`: when fixing code that produces an error
+- `[DOCS]`: when editing the README (writing the documentation) or adding images/media
+
 ## About the `docker-compose` File
 
 The original `docker-compose` file for setting up Airflow containers was obtained from
@@ -285,7 +298,7 @@ for running Airflow in Docker. I modified it in several different ways:
   won't conflict with Airflow's meta database mapping `5432:5432`. The hostnames and ports are meant for Airflow containers,
   but if you want to test the connections locally, use `localhost:543x` with the appropriate ports instead.
 
-  A common (but terrible) error message that pops up when connections are not configured correctly looks like the following, e.g.
+  A common (but terribly unhelpful) error message that pops up when connections are not configured correctly looks like the following, e.g.
   where it just outputs the Datasource name instead of providing an actual error message:
 
   ![Error when connecting to or validating retail_source Datasource](assets/images/misconfiguring_hostname_portnumber.png)
@@ -381,7 +394,67 @@ Currently, the Airflow DAG looks like the following:
 
 - `end_of_data_pipeline`: A DummyOperator to mark the end of the DAG.
 
-## Configuring Great Expectations
+## Using Great Expectations with Airflow
+
+The default settings and configuration I have provided in this repo should allow the DAG to run successfully without
+failing. To test what happens when a step fails, modify some of the Expectations in the `great_expectations/expectations`
+folder so that the data doesn't meet all of those Expectations.
+
+### Airflow Log Output
+
+Upon unsuccessful validation when running the DAG, the Airflow error log will contain a link to the Data Docs, where we can
+see what went wrong with the validation, and why some of the Expectations failed.
+
+![Link to Data Docs in Airflow logs](assets/images/airflow_error_log.png)
+
+Since the pipeline is running on a container, the link is prefixed with `/opt/airflow`, so I added an additional log
+message to include the link in the local machine as well. The `great_expectations` folder is mounted onto the container,
+so all the files that are accessible on localhost are also available to the container, and all files created by operations
+running on the container are also available on localhost.
+
+### Email on Validation Failure
+
+Users can be notified by email when the DAG fails to run due to data validation error. The credentials are configured in the
+`config_variables.yml` file and the `.env` file, and also specified as an `action` in each of the Checkpoint YAML files.
+
+![A typical failure email](assets/images/email.png)
+
+### Ensuring Idempotence
+
+An [idempotent](https://fivetran.com/blog/what-is-idempotence) operation
+must produce the same result no matter how many times you execute it. To illustrate this, consider the DAG runs below:
+
+![Non-idempotent data pipeline](assets/images/pipeline_should_be_idempotent.png)
+
+The first time I ran the data pipeline, all the tasks executed successfully.
+However, on the second run, the final validation check failed for the `public.retail_profiling` table in the
+`postgres-dest` data warehouse.
+
+We can check what went wrong by consulting the Airflow logs for that particular task and opening the link to the Great Expectations
+Data Docs (provided by the address `file://C:\Users\.../great_expectations/uncommitted/data_docs/local_site/index.html`).
+Comparing the results between the first run and the second run shows us why the validation failed:
+
+![First run and second run results](assets/images/idempotency_issues.png)
+
+The number of rows in the table are out of the expected range, which violates one of the Table-level Expectations
+and causes the validation task to fail. Also, it's not just any number of rows - there are exactly **twice** as many rows as
+expected in the table, which is the result of duplicating data that is already in the table.
+
+This means that the task prior to the validation check is not idempotent, since we are getting a different outcome when running
+the same operation, even when using the same code in the same data pipeline. To deal with this, I modified the SQL statements in the
+`transform_load_retail_warehouse.sql` script to drop the table and recreate it before inserting data. This ensures idempotency
+because no matter how many times I run the pipeline, I'll be getting the same result:
+
+![Idempotent data pipeline](assets/images/ensuring_idempotency.png)
+
+In a real-life setting, we wouldn't want to drop an important table, so there could be other ways to ensure idempotency.
+For instance, inserting only the newest daily data so that old data won't be repeated, perhaps
+using the `WHERE` clause to determine filter conditions. Or syncing data using the cursor method method described
+in the [Fivetran blog](https://fivetran.com/blog/what-is-idempotence).
+
+### Testing Another Dataset
+
+## Configuring Great Expectations (optional)
 
 **Note:** The configuration in this section can be skipped since I've already done almost all of the steps
 (except the email credentials in the [Setup](#setup) section).
@@ -472,28 +545,3 @@ done using Python scripts, without any Jupyter Notebooks. I'll be using Great Ex
    the following lines into the `great_expectations.yml` file:
 
    ![Configuring validations storage in Postgres database](assets/images/validations_store.png)
-
-## Running the DAG
-
-The default settings and configuration I have provided in this repo should allow the DAG to run successfully without
-failing. To test what happens when a step fails, modify some of the Expectations in the `great_expectations/expectations`
-folder so that the data doesn't meet all of those Expectations.
-
-### Airflow Log Output
-
-Upon unsuccessful validation when running the DAG, the Airflow error log will contain a link to the Data Docs, where we can
-see what went wrong with the validation, and why some of the Expectations failed.
-
-![Link to Data Docs in Airflow logs](assets/images/airflow_error_log.png)
-
-Since the pipeline is running on a container, the link is prefixed with `/opt/airflow`, so I added an additional log
-message to include the link in the local machine as well. The `great_expectations` folder is mounted onto the container,
-so all the files that are accessible on localhost are also available to the container, and all files created by operations
-running on the container are also available on localhost.
-
-### Email on Validation Failure
-
-Users can be notified by email when the DAG fails to run due to data validation error. The credentials are configured in the
-`config_variables.yml` file and the `.env` file, and also specified as an `action` in each of the Checkpoint YAML files.
-
-![A typical failure email](assets/images/email.png)
