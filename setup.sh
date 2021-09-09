@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Author: Ismail Dawoodjee
 # Date: 24-Aug-2021
 # Purpose: To set up containers to run the Great Expectations
