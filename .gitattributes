@@ -1,1 +1,1 @@
-source-data/* filter=lfs diff=lfs merge=lfs -text
+source-data/*.csv filter=lfs diff=lfs merge=lfs -text
