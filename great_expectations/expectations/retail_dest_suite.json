@@ -123,8 +123,8 @@
       "expectation_type": "expect_column_max_to_be_between",
       "kwargs": {
         "column": "unit_price",
-        "max_value": 45000.0,
-        "min_value": 35000.0
+        "max_value": 100000.0,
+        "min_value": 0.0
       },
       "meta": {}
     },
@@ -186,7 +186,7 @@
           "USA",
           "United Arab Emirates",
           "United Kingdom",
-          "Unspecified"
+          "RSA"
         ]
       },
       "meta": {}

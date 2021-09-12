@@ -157,7 +157,7 @@ def create_expectation_suite(expectation_suite_name):
         column="unit_price", max_value=0.0, min_value=0.0
     )
     validator.expect_column_max_to_be_between(
-        column="unit_price", max_value=45000.00, min_value=35000.00
+        column="unit_price", max_value=100000.00, min_value=0.00
     )
     validator.expect_column_values_to_not_be_null(column="unit_price")
     validator.expect_column_values_to_be_in_type_list(
@@ -208,7 +208,7 @@ def create_expectation_suite(expectation_suite_name):
             "USA",
             "United Arab Emirates",
             "United Kingdom",
-            "Unspecified",
+            "RSA"
         ],
     )
     validator.expect_column_values_to_not_be_null(column="country", mostly=0.99)
