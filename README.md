@@ -4,7 +4,7 @@
   - [Introduction](#introduction)
   - [Setup](#setup)
     - [Pre-Setup](#pre-setup)
-    - [Setup on Linux OS](#setup-on-linux-os)
+    - [Setup on Linux OS (and Mac OS)](#setup-on-linux-os-and-mac-os)
     - [Setup on Windows OS](#setup-on-windows-os)
     - [Post-Setup](#post-setup)
   - [Steps to Submit a Pull Request](#steps-to-submit-a-pull-request)
@@ -16,7 +16,7 @@
     - [Airflow Log Output](#airflow-log-output)
     - [Email on Validation Failure](#email-on-validation-failure)
     - [Ensuring Idempotence](#ensuring-idempotence)
-    - [Testing Another Dataset](#testing-another-dataset)
+    - [Solving Data Quality Issues](#solving-data-quality-issues)
   - [Configuring Great Expectations (optional)](#configuring-great-expectations-optional)
 
 ## Introduction
@@ -51,10 +51,10 @@ The setup was also tested on Ubuntu `v20.04` and can be run by following additio
     │   │   │   ├── retail_warehouse.py
     │   │   │   └── utils.py   
     │   │   └── sql
+    │   │       ├── extract_json_column.sql
     │   │       ├── extract_load_retail_source.sql
     │   │       ├── load_retail_stage.sql
-    │   │       ├── transform_load_retail_warehouse.sql
-    │   │       └── validations_store.sql
+    │   │       └── transform_load_retail_warehouse.sql
     │   ├── retail_data_pipeline.py
     │   ├── transformations.py
     │   └── validations.py
@@ -65,14 +65,14 @@ The setup was also tested on Ubuntu `v20.04` and can be run by following additio
     ├── debugging
     │   └── logging.ini
     ├── dest-data
-    │   └── dummy.txt
+    │   └── .gitkeep
     ├── filesystem
     │   ├── raw
-    │   │   └── dummy.txt
+    │   │   └── .gitkeep
     │   └── stage
     │       ├── temp
-    │       │   └── dummy.txt
-    │       └── dummy.txt
+    │       │   └── .gitkeep
+    │       └── .gitkeep
     ├── great_expectations
     │   ├── checkpoints
     │   │   ├── retail_dest_checkpoint.yml
@@ -114,7 +114,7 @@ The setup was also tested on Ubuntu `v20.04` and can be run by following additio
 To clone the source data from this repository, `git-lfs` or Git Large File Storage must be installed first.
 The data is about 44 MB in total.
 
-On Windows OS, follow the instructions from this [website](https://git-lfs.github.com/). On Linux, run the following
+On Windows OS, follow the instructions from this [website](https://git-lfs.github.com/). On Debian Linux, run the following
 command to install `git-lfs` on your system:
 
     sudo apt install git-lfs
@@ -127,7 +127,7 @@ Ensure that the CSV files and their contents are present in the `source-data` fo
 `Get-Content .\source-data\retail_profiling.csv | select -First 10` with Powershell
 or `head -n 10 source-data/retail_profiling.csv` with Bash, or just opening it as a file:
 
-![CSV file contents](assets/images/source_data.png)
+![CSV file contents](assets/images/source_data.png "CSV file contents")
 
 If you accidentally deleted the `source-data` folder (or the files within) and cannot recover it, you can run
 
@@ -136,11 +136,11 @@ If you accidentally deleted the `source-data` folder (or the files within) and c
 from the `GreatEx` root directory to download the folder and the two files within.
 This still requires `git-lfs` to be installed, however.
 
-### Setup on Linux OS
+### Setup on Linux OS (and Mac OS)
 
 Before starting the setup, ensure that Docker is running.
-On a Linux OS, simply run the `setup.sh` Bash script as follows
-(do NOT run as `./setup.sh`, else the Python virtual environment will not be activated):
+On a Linux OS (or Mac OS), simply run the `setup.sh` Bash script as follows
+(do **NOT** run as `./setup.sh`, else the Python virtual environment will not be activated):
 
     source setup.sh
 
@@ -189,7 +189,7 @@ highlighted below should be changed to the appropriate emails and passwords. If 
 using Gmail, [less secure apps](https://support.google.com/accounts/answer/6010255?hl=en)
 of the Sender email should be turned on.
 
-![Environment variables configuration](assets/images/configuring_env_variables.png)
+![Environment variables configuration](assets/images/configuring_env_variables.png "Environment variables configuration")
 
 Next, ensure that Docker is running before initializing the Airflow containers.
 The Dockerfile extends the Airflow image to install Python libraries within the
@@ -203,7 +203,7 @@ and run the second command to initialize Airflow containers:
 
 If the Airflow initialization was successful, there will be a return code of 0 shown below:
 
-![Return Code 0](assets/images/airflow_init_success_code.png)
+![Return Code 0](assets/images/airflow_init_success_code.png "Return Code 0")
 
 Then, start the containers in the background:
 
@@ -216,7 +216,7 @@ a convenience script with `airflow_conn.ps1`. Run this Powershell script with:
 
 If you are using VS Code, you can check the health of the containers with the Docker extension:
 
-![Container health from Docker extension](assets/images/container_health.png)
+![Container health from Docker extension](assets/images/container_health.png "Container health from Docker extension")
 
 Otherwise, type `docker ps -a` into the terminal to check their health status.
 Once the Airflow Scheduler and Webserver are in a healthy state, you can go to `localhost:8080` in
@@ -301,7 +301,7 @@ for running Airflow in Docker. I modified it in several different ways:
   A common (but terribly unhelpful) error message that pops up when connections are not configured correctly looks like the following, e.g.
   where it just outputs the Datasource name instead of providing an actual error message:
 
-  ![Error when connecting to or validating retail_source Datasource](assets/images/misconfiguring_hostname_portnumber.png)
+  ![Error when connecting to or validating retail_source Datasource](assets/images/misconfiguring_hostname_portnumber.png "Error when connecting to or validating retail_source Datasource")
 
 - The `great_expectations` folder, `filesystem` folder, `database-setup`, `source-data` and `dest-data` folders also need to be
   mounted as volumes to the appropriate containers so that Airflow can access them.
@@ -311,7 +311,7 @@ for running Airflow in Docker. I modified it in several different ways:
   service name from the default `postgres` to `postgres-airflow`,
   so the hostname in the connection strings must also be changed:
 
-    ![service_name == hostname](assets/images/service_name_hostname.png)
+    ![service_name == hostname](assets/images/service_name_hostname.png "service_name == hostname")
 
   This also applies to username, password and database names.
 
@@ -335,7 +335,9 @@ There are 3 scripts for each of the 3 databases (`postgres-source`, `postgres-de
 
 - `storedb.sql` for the `postgres-store` database: In the `postgres-store` database, I created two schemas - the `systems`
   schema and the `logging` schema. Within the `systems` schema, the `ge_validations_store` table is where the original data
-  validation results are going to be placed.
+  validation results are going to be placed. The original validations metadata table `systems.ge_validations_store`:
+
+  ![Validations store, the JSON column is not easily readable](assets/images/original_validations_store_table.png "Validations store, the JSON column is not easily readable")
 
   However, the data in `ge_validations_store` is not very useful for logging purposes, because most of the information about the
   validations that were ran, i.e. what time the validation started, when it ended, how long it took, whether or not the data
@@ -344,13 +346,15 @@ There are 3 scripts for each of the 3 databases (`postgres-source`, `postgres-de
   I extracted the useful info from the JSON file, added two columns to mark when the validation finished and its duration, and
   created a trigger to `INSERT` a log record into the `logging.great_expectations` table whenever an `INSERT` operation is
   done on the `systems.ge_validations_store`. The schemas, tables, and the trigger should be created when the `postgres-store`
-  database starts for the first time.
+  database starts for the first time. The modified table `logging.great_expectations` contains more useful information:
+
+  ![Modified logging table for validation results](assets/images/modified_logging_table.png "Modified logging table for validation results")
 
 ## Retail Pipeline DAG
 
 Currently, the Airflow DAG looks like the following:
 
-![Retail pipeline DAG](assets/images/current_dag.png)
+![Retail pipeline DAG](assets/images/current_dag.png "Retail pipeline DAG")
 
 - `validate_retail_source_data`: This task uses the PythonOperator to run a GreatEx Checkpoint for validating data in the
   `postgres-source` database. A Checkpoint is a pair between a Datasource and an Expectation Suite, so to create a Checkpoint,
@@ -405,7 +409,7 @@ folder so that the data doesn't meet all of those Expectations.
 Upon unsuccessful validation when running the DAG, the Airflow error log will contain a link to the Data Docs, where we can
 see what went wrong with the validation, and why some of the Expectations failed.
 
-![Link to Data Docs in Airflow logs](assets/images/airflow_error_log.png)
+![Link to Data Docs in Airflow logs](assets/images/airflow_error_log.png "Link to Data Docs in Airflow logs")
 
 Since the pipeline is running on a container, the link is prefixed with `/opt/airflow`, so I added an additional log
 message to include the link in the local machine as well. The `great_expectations` folder is mounted onto the container,
@@ -417,14 +421,14 @@ running on the container are also available on localhost.
 Users can be notified by email when the DAG fails to run due to data validation error. The credentials are configured in the
 `config_variables.yml` file and the `.env` file, and also specified as an `action` in each of the Checkpoint YAML files.
 
-![A typical failure email](assets/images/email.png)
+![A typical failure email](assets/images/email.png "A typical failure email")
 
 ### Ensuring Idempotence
 
 An [idempotent](https://fivetran.com/blog/what-is-idempotence) operation
 must produce the same result no matter how many times you execute it. To illustrate this, consider the DAG runs below:
 
-![Non-idempotent data pipeline](assets/images/pipeline_should_be_idempotent.png)
+![Non-idempotent data pipeline](assets/images/pipeline_should_be_idempotent.png "Non-idempotent data pipeline")
 
 The first time I ran the data pipeline, all the tasks executed successfully.
 However, on the second run, the final validation check failed for the `public.retail_profiling` table in the
@@ -434,7 +438,7 @@ We can check what went wrong by consulting the Airflow logs for that particular 
 Data Docs (provided by the address `file://C:\Users\.../great_expectations/uncommitted/data_docs/local_site/index.html`).
 Comparing the results between the first run and the second run shows us why the validation failed:
 
-![First run and second run results](assets/images/idempotency_issues.png)
+![First run and second run results](assets/images/idempotency_issues.png "First run and second run results")
 
 The number of rows in the table are out of the expected range, which violates one of the Table-level Expectations
 and causes the validation task to fail. Also, it's not just any number of rows - there are exactly **twice** as many rows as
@@ -445,14 +449,62 @@ the same operation, even when using the same code in the same data pipeline. To 
 `transform_load_retail_warehouse.sql` script to drop the table and recreate it before inserting data. This ensures idempotency
 because no matter how many times I run the pipeline, I'll be getting the same result:
 
-![Idempotent data pipeline](assets/images/ensuring_idempotency.png)
+![Idempotent data pipeline](assets/images/ensuring_idempotency.png "Idempotent data pipeline")
 
 In a real-life setting, we wouldn't want to drop an important table, so there could be other ways to ensure idempotency.
 For instance, inserting only the newest daily data so that old data won't be repeated, perhaps
 using the `WHERE` clause to determine filter conditions. Or syncing data using the cursor method method described
 in the [Fivetran blog](https://fivetran.com/blog/what-is-idempotence).
 
-### Testing Another Dataset
+### Solving Data Quality Issues
+
+Currently, the dataset passing through the pipeline is a clean one, free from any data quality issues. To check what happens
+when a less than ideal dataset is ingested, we use the `retail_validating.csv` file instead of `retail_profiling.csv`.
+
+A hassle-free way of testing this is to simply rename the original `retail_profiling.csv` to `retail_profiling_orig.csv` and
+rename the trial dataset `retail_validating.csv` to `retail_profiling.csv`. The table within the source database is still the
+original, so we will have to drop the original table and load the trial dataset (either by running the `sourcedb.sql` script in the
+`database-setup` folder or alternatively, by tearing down the pipeline and rebuilding it again).
+
+Check that the trial data is correctly loaded by querying the first few rows (I'm using the MySQL extension in VSCode).
+The values in the first few rows should be different from the original dataset:
+
+![Trial data for testing](assets/images/trial_table.png "Trial data for testing")
+
+Interestingly, the incorrectly formatted date in the CSV file gets correctly formatted after loading into the database table.
+
+Now, we can rerun the pipeline and see that it fails in the first validation step:
+
+![Debugging the pipeline](assets/images/pipeline_failure_email_alert_airflow_logs.png "Debugging the pipeline")
+
+When the pipeline fails, I receive an email alert and I check the Airflow logs to see what went wrong. The failure is recorded in the
+Great Expectations Data Docs as well as in the `logging.great_expectations` table in the `postgres-store` database:
+
+![Validation failure is recorded in two locations](assets/images/data_docs_and_logging_table.png "Validation failure is recorded in two locations")
+
+Out of 23 Expectations, only 19 passed the validation checkpoint. I can open up the validation result page for that checkpoint
+and look at the failed Expectations to see why they failed.
+
+![Unexpectations haha](assets/images/unexpectations.png "Unexpectations haha")
+
+There are negative quantities, negative prices, an unexpected country name, and an unexpected max value for the price.
+The first two issues can be solved by cleaning the dataset, while the third issue can be solved by adding an extra country
+to the set of expected country names. The last issue would require us to change the max-value Expectation.
+However, maximum values can fluctuate wildly across different data batches, so in this case, I changed the
+max-value price range to be between 0 and 100,000.
+
+Trying out the pipeline after resolving the issues (use the `clean_trial_dataset.py` in the `source-data` folder)
+uncovers another unexpected country name that we missed. This is one of the drawbacks of the Data Docs, which only shows
+one of the unexpected values, doesn't show all of them at once:
+
+![Anomaly missed in the 3rd pipeline run](assets/images/country_anomaly.png "Anomaly missed in the 3rd pipeline run")
+
+Running the pipeline a fourth time (after cleaning the dataset and modifying the Expectations) results in a successful run:
+
+![Successful run after debugging data quality issues](assets/images/successful_run.png "Successful run after debugging data quality issues")
+
+In this way, there are two ways of debugging a failed validation check: either by altering the dataset to clean it
+so that it meets the required Expectations, OR by modifying the Expectations to fit the values in the data.
 
 ## Configuring Great Expectations (optional)
 
@@ -527,7 +579,7 @@ done using Python scripts, without any Jupyter Notebooks. I'll be using Great Ex
    this string and populates a YAML file with the specified Checkpoint name, which is located in the `great_expectations/checkpoints`
    folder. I've also added an extra `action` to the `action_list` for each Checkpoint file to send an email on validation failure.
 
-   ![For sending email on validation failure](assets/images/email_on_validation_failure.png)
+   ![For sending email on validation failure](assets/images/email_on_validation_failure.png "For sending email on validation failure")
 
    **Note:** Validating (running) the Checkpoint locally will keep a record at the local time whereas validating by
    running the Airflow DAG will keep records that use the UTC timestamp. Hence, to prevent inconsistency between the
@@ -544,4 +596,4 @@ done using Python scripts, without any Jupyter Notebooks. I'll be using Great Ex
    In addition, the record of each validation is stored in the `postgres-store` database, which was configured by adding
    the following lines into the `great_expectations.yml` file:
 
-   ![Configuring validations storage in Postgres database](assets/images/validations_store.png)
+   ![Configuring validations storage in Postgres database](assets/images/validations_store.png "Configuring validations storage in Postgres database")
