@@ -43,8 +43,8 @@ function prepare_python_environment () {
     
     python3 -m venv .venv
     source .venv/bin/activate
-    pip install -U wheel setuptools
-    pip install -r requirements.txt
+    python -m pip install -U pip wheel setuptools
+    pip install -r pip-chill-requirements.txt
 }
 
 function reinitialize_great_expectations () {
