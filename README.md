@@ -169,7 +169,7 @@ Prepare a Python virtual environment:
 
 Install Great Expectations and required dependencies with
 
-    pip install -U wheel setuptools; pip install -r requirements.txt
+    python -m pip install -U pip wheel setuptools; pip install -r pip-chill-requirements.txt
 
 Currently, the `great_expectations` folder in this repo is partially initialized.
 Reinitialize it by running:
